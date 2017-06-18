@@ -1,0 +1,11 @@
+c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\bin\Debug\MacroMachine.exe.config
+c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\bin\Debug\MacroMachine.exe
+c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\bin\Debug\MacroMachine.pdb
+c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\obj\Debug\MacroMachine.csprojResolveAssemblyReference.cache
+c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\obj\Debug\MacroMachine.Properties.Resources.resources
+c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\obj\Debug\MacroMachine.csproj.GenerateResource.Cache
+c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\obj\Debug\MacroMachine.exe
+c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\obj\Debug\MacroMachine.pdb
+c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\obj\Debug\MacroMachine.Form1.resources
+c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\bin\Debug\NAudio.dll
+c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\bin\Debug\NAudio.xml
