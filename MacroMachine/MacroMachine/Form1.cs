@@ -91,7 +91,13 @@ namespace MacroMachine
             inputLbl2.Location = new Point(cb2.Location.X - inputLbl2.Size.Width, 3);
             inputLbl2.Text = "Output:";
 
+            Label lblTip = new Label();
+            lblTip.Text = "Hold CTRL + Numpad[n] to record";
+            lblTip.Size = new Size(300, 15);
+            lblTip.Location = new Point(15, _SCREENHEIGHT - 60);
+
             Controls.Add(inputLbl2);
+            Controls.Add(lblTip);
 
             cb2.Items.AddRange(SoundSystem.GetDevices());
             cb2.SelectedIndex = _currentConfig.CurrentOutputDevice;
@@ -139,6 +145,11 @@ namespace MacroMachine
                 fileBtn.Location = new Point(0, 0);
                 fileBtn.Click += new EventHandler(ButtonSoundDialog);
 
+                Label lblNumPad = new Label();
+                lblNumPad.Text = "Numpad" + _buttonCount;
+                lblNumPad.Size = new Size(53, 15);
+                lblNumPad.Location = new Point(Convert.ToInt16(_BUTTONSIZE.Width * 0.25), _BUTTONSIZE.Height - Convert.ToInt16((_BUTTONSIZE.Height * 0.35)));
+                
                 /*
                 Label macroLbl = new Label();
                 macroLbl.Text = "Macro key:";
@@ -165,6 +176,7 @@ namespace MacroMachine
                 btn.Controls.Add(fileBtn);
                 btn.Controls.Add(text);
                 btn.Controls.Add(delBtn);
+                btn.Controls.Add(lblNumPad);
                 Controls.Add(btn);
 
                 _buttonCount++;
@@ -225,6 +237,7 @@ namespace MacroMachine
             }
 
             OpenFileDialog fd = new OpenFileDialog();
+            fd.InitialDirectory = savedir;
             fd.ShowDialog();
             int id = Convert.ToInt16(((Button)o).Parent.Name.Substring(3));
 
