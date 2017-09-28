@@ -64,6 +64,7 @@ namespace MacroMachine
             this.Size = new Size(_SCREENWIDTH, _SCREENHEIGHT);
 
 
+            //FOR INPUT DEVICE, NOT ENABLED DOESN'T WORK YET
             /*ComboBox cb = new ComboBox();
             cb.Location = new Point(_SCREENWIDTH - cb.Size.Width - 15, 0);
             cb.SelectedIndexChanged += new EventHandler(SetInputDeviceNumber);
@@ -108,22 +109,26 @@ namespace MacroMachine
             }
         }
 
+        //FOR INPUT DEVICE, NOT ENABLED DOESN'T WORK YET
         /*void SetInputDeviceNumber(object o, EventArgs e)
         {
             ComboBox cb = (ComboBox)o;
             _currentConfig.CurrentInputDevice = cb.SelectedIndex;
         }*/
 
+        //called when choosing a device in the combobox
         void SetOutputDeviceNumber(object o, EventArgs e)
         {
             ComboBox cb = (ComboBox)o;
             _currentConfig.CurrentOutputDevice = cb.SelectedIndex;
         }
 
+        //Dynamically creating buttons in the UI
         void CreateButtons()
         {
             if (_buttonCount != _MAXBUTTONS)
             {
+                //Filenam
                 TextBox text = new TextBox();
                 text.Name = "Text";
                 text.Text = _currentConfig.Texts[_buttonCount];
@@ -133,23 +138,27 @@ namespace MacroMachine
                 text.LostFocus += new EventHandler(TextboxTextChanged);
                 text.KeyDown += new KeyEventHandler(TextKeyDown);
 
+                //Delete button
                 Button delBtn = new Button();
                 delBtn.Text = "x";
                 delBtn.Size = new Size(30, 30);
                 delBtn.Location = new Point(_BUTTONSIZE.Width - 30, 0);
                 delBtn.Click += new EventHandler(ButtonDeleter);
 
+                //choose file button
                 Button fileBtn = new Button();
                 fileBtn.Text = "♫";
                 fileBtn.Size = new Size(30, 30);
                 fileBtn.Location = new Point(0, 0);
                 fileBtn.Click += new EventHandler(ButtonSoundDialog);
 
+                //Numpad enumeration 
                 Label lblNumPad = new Label();
                 lblNumPad.Text = "Numpad" + _buttonCount;
                 lblNumPad.Size = new Size(53, 15);
                 lblNumPad.Location = new Point(Convert.ToInt16(_BUTTONSIZE.Width * 0.25), _BUTTONSIZE.Height - Convert.ToInt16((_BUTTONSIZE.Height * 0.35)));
-                
+
+                //FOR INPUT DEVICE, NOT ENABLED DOESN'T WORK YET
                 /*
                 Label macroLbl = new Label();
                 macroLbl.Text = "Macro key:";
@@ -165,6 +174,7 @@ namespace MacroMachine
                 macroTxt.TextChanged += new EventHandler(MacroTextChanged);
                 */
 
+                //The entire button
                 Button btn = new Button();
                 btn.Name = "btn" + _buttonCount;
                 btn.Size = _BUTTONSIZE;
@@ -188,7 +198,8 @@ namespace MacroMachine
             TextBox tb = ((TextBox)o);
             _currentConfig.MacroKey[Convert.ToInt16(tb.Parent.Name.Substring(3))] = ((TextBox)o).Text;
         }*/
-
+        
+        //if ENTER is pressed on the keyboard for usability
         void TextKeyDown(object o, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -197,6 +208,7 @@ namespace MacroMachine
             }
         }
 
+        //Automatically saves the new filename
         void TextboxTextChanged(object o, EventArgs e)
         {
             TextBox tb = ((TextBox)o);
@@ -223,11 +235,13 @@ namespace MacroMachine
             }
         }
 
+        //Event, fired when button control is clicked
         void ButtonClick(object o, EventArgs e)
         {
             SoundSystem.PlayMacro(Convert.ToInt16(((Button)o).Name.Substring(3)));
         }
 
+        //Dialog for choosing a file
         void ButtonSoundDialog(object o, EventArgs e)
         {
             string savedir = _WORKINGDIR + "Sounds\\";
@@ -269,6 +283,7 @@ namespace MacroMachine
 
         }
 
+        //Deletes sound
         void ButtonDeleter(object o, EventArgs e)
         {
             int num = Convert.ToInt16(((Button)o).Parent.Name.Substring(3));
@@ -278,6 +293,7 @@ namespace MacroMachine
             text.Text = "";
         }
 
+        //makes sure the config is saved when the form closes
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             BinaryFormatter bf = new BinaryFormatter();
@@ -288,6 +304,7 @@ namespace MacroMachine
             }
         }
 
+        //Called externally when something has been recorded
         public void UpdateTextbox(int btnNum, string text)
         {
             Button btn = (Button)Controls.Find("btn" + btnNum, true).First();

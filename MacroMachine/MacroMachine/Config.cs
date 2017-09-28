@@ -9,6 +9,7 @@ namespace MacroMachine
     [Serializable]
     class Config
     {
+        //Lots of commented code, it's there incase choosing recording device gets added
         public static Config _currentConfig;
         public string[] Sounds { get; set; }
         public string[] Texts { get; set; }
@@ -16,6 +17,7 @@ namespace MacroMachine
         public int CurrentOutputDevice { get; set; }
         //public int CurrentInputDevice { get; set; }
 
+        //for new configs
         public Config(int maxButtons)
         {
             Sounds = new string[maxButtons];
@@ -26,6 +28,7 @@ namespace MacroMachine
             _currentConfig = this;
         }
 
+        //for loading
         public Config(Config blueprint)
         {
             Sounds = blueprint.Sounds;

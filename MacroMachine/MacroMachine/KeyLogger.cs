@@ -9,6 +9,7 @@ using System.Windows.Forms;
 
 namespace MacroMachine
 {
+    //Inspired by https://null-byte.wonderhowto.com/how-to/create-simple-hidden-console-keylogger-c-sharp-0132757/
     class KeyLogger
     {
         private const int WH_KEYBOARD_LL = 13;
@@ -48,8 +49,8 @@ namespace MacroMachine
             {
                 int vkCode = Marshal.ReadInt32(lParam);
 
-                if (vkCode == 162) //Control
-                    isCtrl = true;
+                if (vkCode == 162) //Control button on keyboard
+                    isCtrl = true; //Enables recording
                 else if (!isCtrl)
                     MacroCheck(vkCode);
                 else
@@ -59,16 +60,17 @@ namespace MacroMachine
             {
                 int vkCode = Marshal.ReadInt32(lParam);
 
-                if (vkCode == 162) //Control
+                if (vkCode == 162) //Control button on keyboard
                 {
                     isCtrl = false;
-                    SoundSystem.StopRecording();
+                    SoundSystem.StopRecording(); //if ctrl is released stop all recording
                 }
             }
 
             return CallNextHookEx(_hookID, nCode, wParam, lParam);
         }
 
+        //Function for checking what key was pressed, plays corresponding macro
         public static void MacroCheck(int vkCode)
         {
             if ((Keys)vkCode == Keys.NumPad0)
@@ -113,6 +115,7 @@ namespace MacroMachine
             }
         }
 
+        //Checks numpad button and records to corresponing macro
         public static void RecordCheck(int vkCode)
         {
             if ((Keys)vkCode == Keys.NumPad0)
