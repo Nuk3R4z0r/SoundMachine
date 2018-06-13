@@ -102,6 +102,10 @@ namespace MacroMachine
             Controls.Add(btnOutput);
 
             DeviceBox.Items.AddRange(SoundSystem.GetDevices(_currentConfig.CurrentDeviceType));
+
+            if (_currentConfig.CurrentOutputDevice >= DeviceBox.Items.Count)
+                _currentConfig.CurrentOutputDevice = DeviceBox.Items.Count - 1;
+
             DeviceBox.SelectedIndex = _currentConfig.CurrentOutputDevice;
         }
         
