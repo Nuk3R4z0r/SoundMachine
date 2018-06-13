@@ -9,7 +9,6 @@ namespace MacroMachine
         public string[] Sounds { get; set; }
         public string[] Texts { get; set; }
         public int CurrentOutputDevice { get; set; }
-        public DeviceType CurrentDeviceType { get; set; }
 
         public Config(int maxButtons)
         {
@@ -25,7 +24,6 @@ namespace MacroMachine
             Texts = blueprint.Texts;
             CurrentOutputDevice = blueprint.CurrentOutputDevice;
             _currentConfig = this;
-            CurrentDeviceType = blueprint.CurrentDeviceType;
         }
     }
 }

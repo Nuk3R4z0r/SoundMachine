@@ -68,27 +68,21 @@ namespace MacroMachine
             //Devices combobox
             DeviceBox = new ComboBox();
             DeviceBox.Size = new Size(200, 20);
-            DeviceBox.Location = new Point((_SCREENWIDTH - DeviceBox.Size.Width - 15) - 10, 0);
+            DeviceBox.Location = new Point((_SCREENWIDTH - DeviceBox.Size.Width - 15) - 10, 3);
             DeviceBox.SelectedIndexChanged += new EventHandler(SetOutputDeviceNumber);
             Controls.Add(DeviceBox);
 
             //"Device" Label
             Label inputLbl2 = new Label();
             inputLbl2.Size = new Size(100, 15);
-            inputLbl2.Location = new Point(DeviceBox.Location.X - inputLbl2.Size.Width, 3);
+            inputLbl2.Location = new Point(DeviceBox.Location.X - inputLbl2.Size.Width, 6);
             inputLbl2.Text = "Playback device:";
 
             Button btnOutput = new Button();
-            btnOutput.Location = new Point(inputLbl2.Location.X - 450, 3);
+            btnOutput.Location = new Point(inputLbl2.Location.X - 230, 3);
             btnOutput.Size = new Size(200, 20);
             btnOutput.Text = "Load Output Devices";
             btnOutput.Click += new EventHandler(BtnLoadOutputDevices);
-
-            Button btnInput = new Button();
-            btnInput.Location = new Point(inputLbl2.Location.X - 250, 3);
-            btnInput.Size = new Size(200, 20);
-            btnInput.Text = "Load Input Devices";
-            btnInput.Click += new EventHandler(BtnLoadInputDevices);
 
             //Bottom left tip label
             Label lblTip = new Label();
@@ -98,10 +92,21 @@ namespace MacroMachine
 
             Controls.Add(inputLbl2);
             Controls.Add(lblTip);
-            Controls.Add(btnInput);
             Controls.Add(btnOutput);
 
-            DeviceBox.Items.AddRange(SoundSystem.GetDevices(_currentConfig.CurrentDeviceType));
+            LoadOutputDevices();
+        }
+        
+        //Button event to load output devices
+        private void BtnLoadOutputDevices(object o, EventArgs e)
+        {
+            LoadOutputDevices();
+        }
+
+        private void LoadOutputDevices()
+        {
+            DeviceBox.Items.Clear();
+            DeviceBox.Items.AddRange(SoundSystem.GetDevices());
 
             if (_currentConfig.CurrentOutputDevice >= DeviceBox.Items.Count)
                 _currentConfig.CurrentOutputDevice = DeviceBox.Items.Count - 1;
@@ -109,24 +114,6 @@ namespace MacroMachine
             DeviceBox.SelectedIndex = _currentConfig.CurrentOutputDevice;
         }
         
-        //Button event to load output devices
-        private void BtnLoadOutputDevices(object o, EventArgs e)
-        {
-            DeviceBox.Items.Clear();
-            DeviceBox.Items.AddRange(SoundSystem.GetDevices(DeviceType.OutputDevice));
-            _currentConfig.CurrentDeviceType = DeviceType.OutputDevice;
-            DeviceBox.SelectedIndex = 0;
-        }
-
-        //Button event to load input devices
-        private void BtnLoadInputDevices(object o, EventArgs e)
-        {
-            DeviceBox.Items.Clear();
-            DeviceBox.Items.AddRange(SoundSystem.GetDevices(DeviceType.InputDevice));
-            _currentConfig.CurrentDeviceType = DeviceType.InputDevice;
-            DeviceBox.SelectedIndex = 0;
-        }
-
         //EventHandler for choosing a device in DeviceBox
         private void SetOutputDeviceNumber(object o, EventArgs e)
         {
