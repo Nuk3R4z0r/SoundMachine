@@ -66,7 +66,7 @@ namespace MacroMachine
                 _waveSource.DataAvailable += new EventHandler<WaveInEventArgs>(waveSource_DataAvailable);
                 _waveSource.RecordingStopped += new EventHandler<StoppedEventArgs>(waveSource_RecordingStopped);
 
-                string saveFile = Form1._currentForm.work + "Sounds\\" + "Macro" + macroSpot + ".wav";
+                string saveFile = Form1._currentForm._WORKINGDIR + "Sounds\\" + "Macro" + macroSpot + ".wav";
                 //checks if file exists
                 if (Config._currentConfig.Sounds[macroSpot] != null)
                 {
