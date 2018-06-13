@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NAudio.Wave;
 using NAudio;
 using System.IO;
+using System.Windows.Forms;
 
 namespace MacroMachine
 {
@@ -36,8 +34,15 @@ namespace MacroMachine
                 {
                     WaveFileReader reader = new WaveFileReader(fi);
                     readers.Add(reader);
-                    wo.Init(reader);
-                    wo.Play();
+                    try
+                    {
+                        wo.Init(reader);
+                        wo.Play();
+                    }
+                    catch(MmException e)
+                    {
+                        MessageBox.Show("Error!\n" + e.Message + "\n\nCan't play audio:\nSelected audio device is already in use!");
+                    }
                 }
             }
         }

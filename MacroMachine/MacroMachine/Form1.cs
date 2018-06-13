@@ -72,11 +72,11 @@ namespace MacroMachine
             DeviceBox.SelectedIndexChanged += new EventHandler(SetOutputDeviceNumber);
             Controls.Add(DeviceBox);
 
-            //"Output" Label
+            //"Device" Label
             Label inputLbl2 = new Label();
-            inputLbl2.Size = new Size(45, 15);
+            inputLbl2.Size = new Size(100, 15);
             inputLbl2.Location = new Point(DeviceBox.Location.X - inputLbl2.Size.Width, 3);
-            inputLbl2.Text = "Output:";
+            inputLbl2.Text = "Playback device:";
 
             Button btnOutput = new Button();
             btnOutput.Location = new Point(inputLbl2.Location.X - 450, 3);
@@ -111,6 +111,7 @@ namespace MacroMachine
             DeviceBox.Items.Clear();
             DeviceBox.Items.AddRange(SoundSystem.GetDevices(DeviceType.OutputDevice));
             _currentConfig.CurrentDeviceType = DeviceType.OutputDevice;
+            DeviceBox.SelectedIndex = 0;
         }
 
         //Button event to load input devices
@@ -119,6 +120,7 @@ namespace MacroMachine
             DeviceBox.Items.Clear();
             DeviceBox.Items.AddRange(SoundSystem.GetDevices(DeviceType.InputDevice));
             _currentConfig.CurrentDeviceType = DeviceType.InputDevice;
+            DeviceBox.SelectedIndex = 0;
         }
 
         //EventHandler for choosing a device in DeviceBox
