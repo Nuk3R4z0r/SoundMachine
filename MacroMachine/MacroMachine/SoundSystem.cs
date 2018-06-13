@@ -11,13 +11,12 @@ namespace MacroMachine
 {
     class SoundSystem
     {
-        static WasapiLoopbackCapture _waveSource;
-        static WaveFileWriter _waveFile;
-        static bool _readyForRecording = true;
+        private static WasapiLoopbackCapture _waveSource;
+        private static WaveFileWriter _waveFile;
+        private static bool _readyForRecording = true;
         //Lists so that mulitple sounds can be played on the same time
-        static List<WaveFileReader> readers = new List<WaveFileReader>();
-        static List<WaveOutEvent> players = new List<WaveOutEvent>();
-        static string _WORKINGDIR = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\MacroMachine\\";
+        private static List<WaveFileReader> readers = new List<WaveFileReader>();
+        private static List<WaveOutEvent> players = new List<WaveOutEvent>();
 
         //For playing sounds, called from KeyLogger.cs
         public static void PlayMacro(int number)
@@ -67,7 +66,7 @@ namespace MacroMachine
                 _waveSource.DataAvailable += new EventHandler<WaveInEventArgs>(waveSource_DataAvailable);
                 _waveSource.RecordingStopped += new EventHandler<StoppedEventArgs>(waveSource_RecordingStopped);
 
-                string saveFile = _WORKINGDIR + "Sounds\\" + "Macro" + macroSpot + ".wav";
+                string saveFile = Form1._currentForm.work + "Sounds\\" + "Macro" + macroSpot + ".wav";
                 //checks if file exists
                 if (Config._currentConfig.Sounds[macroSpot] != null)
                 {
@@ -115,7 +114,7 @@ namespace MacroMachine
         }
 
         //Event, writes data from buffer
-        static void waveSource_DataAvailable(object sender, WaveInEventArgs e)
+        private static void waveSource_DataAvailable(object sender, WaveInEventArgs e)
         {
             if (_waveFile != null)
             {
@@ -125,7 +124,7 @@ namespace MacroMachine
         }
 
         //Event, cleanup for recording
-        static void waveSource_RecordingStopped(object sender, StoppedEventArgs e)
+        private static void waveSource_RecordingStopped(object sender, StoppedEventArgs e)
         {
             if (_waveSource != null)
             {

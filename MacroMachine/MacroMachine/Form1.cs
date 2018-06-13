@@ -1,29 +1,25 @@
 ﻿using System;
 using System.Drawing;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace MacroMachine
 {
     public partial class Form1 : Form
     {
-        readonly string _WORKINGDIR;
+        public readonly string _WORKINGDIR;
         public static Form1 _currentForm;
 
-        Config _currentConfig;
-        int _buttonCount = 0;
-        const int _MARGIN = 40;
-        const int _MAXROWS = 5;
-        const int _MAXCOLUMNS = 2;
-        const int _MAXBUTTONS = _MAXROWS * _MAXCOLUMNS;
-        int _SCREENWIDTH;
-        int _SCREENHEIGHT;
-        readonly static Size _BUTTONSIZE = new Size(100, 100);
+        private Config _currentConfig;
+        private const int _MARGIN = 40;
+        private const int _MAXROWS = 5;
+        private const int _MAXCOLUMNS = 2;
+        private const int _MAXBUTTONS = _MAXROWS * _MAXCOLUMNS;
+        private int _SCREENWIDTH;
+        private int _SCREENHEIGHT;
+        private static readonly Size _BUTTONSIZE = new Size(100, 100);
 
         public Form1()
         {
@@ -63,35 +59,26 @@ namespace MacroMachine
             _SCREENWIDTH = (_MAXBUTTONS * (_BUTTONSIZE.Width + _MARGIN) / _MAXCOLUMNS) + _MARGIN + 20;
             this.Size = new Size(_SCREENWIDTH, _SCREENHEIGHT);
 
+            CreateControls();
+            CreateButtons();
+        }
 
-            //FOR INPUT DEVICE, NOT ENABLED DOESN'T WORK YET
-            /*ComboBox cb = new ComboBox();
-            cb.Location = new Point(_SCREENWIDTH - cb.Size.Width - 15, 0);
-            cb.SelectedIndexChanged += new EventHandler(SetInputDeviceNumber);
-            Controls.Add(cb);
-
-            Label inputLbl = new Label();
-            inputLbl.Size = new Size(35, 15);
-            inputLbl.Location = new Point(cb.Location.X - inputLbl.Size.Width, 3);
-            inputLbl.Text = "Input:";
-
-            Controls.Add(inputLbl);
-
-            cb.Items.AddRange(SoundSystem.GetDevices());
-            cb.SelectedIndex = _currentConfig.CurrentInputDevice;
-            */
-
+        private void CreateControls()
+        {
+            //Devices combobox
             ComboBox cb2 = new ComboBox();
             cb2.Size = new Size(200, 20);
-            cb2.Location = new Point((_SCREENWIDTH - cb2.Size.Width - 15) /*- inputLbl.Width - cb.Width - 10*/, 0);
+            cb2.Location = new Point((_SCREENWIDTH - cb2.Size.Width - 15) - 10, 0);
             cb2.SelectedIndexChanged += new EventHandler(SetOutputDeviceNumber);
             Controls.Add(cb2);
 
+            //"Output" Label
             Label inputLbl2 = new Label();
             inputLbl2.Size = new Size(45, 15);
             inputLbl2.Location = new Point(cb2.Location.X - inputLbl2.Size.Width, 3);
             inputLbl2.Text = "Output:";
 
+            //Bottom left tip label
             Label lblTip = new Label();
             lblTip.Text = "Hold CTRL + Numpad[n] to record";
             lblTip.Size = new Size(300, 15);
@@ -102,105 +89,59 @@ namespace MacroMachine
 
             cb2.Items.AddRange(SoundSystem.GetDevices());
             cb2.SelectedIndex = _currentConfig.CurrentOutputDevice;
-
-            for (int i = 0; i < _MAXBUTTONS; i++)
-            {
-                CreateButtons();
-            }
         }
-
-        //FOR INPUT DEVICE, NOT ENABLED DOESN'T WORK YET
-        /*void SetInputDeviceNumber(object o, EventArgs e)
-        {
-            ComboBox cb = (ComboBox)o;
-            _currentConfig.CurrentInputDevice = cb.SelectedIndex;
-        }*/
-
-        //called when choosing a device in the combobox
-        void SetOutputDeviceNumber(object o, EventArgs e)
+        
+        private void SetOutputDeviceNumber(object o, EventArgs e)
         {
             ComboBox cb = (ComboBox)o;
             _currentConfig.CurrentOutputDevice = cb.SelectedIndex;
         }
 
-        //Dynamically creating buttons in the UI
-        void CreateButtons()
+        private void CreateButtons()
         {
-            if (_buttonCount != _MAXBUTTONS)
+            for (int i = 0; i < _MAXBUTTONS; i++)
             {
-                //Filenam
                 TextBox text = new TextBox();
                 text.Name = "Text";
-                text.Text = _currentConfig.Texts[_buttonCount];
+                text.Text = _currentConfig.Texts[i];
                 text.Size = new Size(text.Size.Width - 2, text.Size.Height);
                 text.Location = new Point(1, Convert.ToInt16((_BUTTONSIZE.Height * 0.5) - (text.Size.Height * 0.5)));
                 text.TextAlign = HorizontalAlignment.Center;
                 text.LostFocus += new EventHandler(TextboxTextChanged);
                 text.KeyDown += new KeyEventHandler(TextKeyDown);
 
-                //Delete button
                 Button delBtn = new Button();
                 delBtn.Text = "x";
                 delBtn.Size = new Size(30, 30);
                 delBtn.Location = new Point(_BUTTONSIZE.Width - 30, 0);
                 delBtn.Click += new EventHandler(ButtonDeleter);
 
-                //choose file button
                 Button fileBtn = new Button();
                 fileBtn.Text = "♫";
                 fileBtn.Size = new Size(30, 30);
                 fileBtn.Location = new Point(0, 0);
                 fileBtn.Click += new EventHandler(ButtonSoundDialog);
 
-                //Numpad enumeration 
                 Label lblNumPad = new Label();
-                lblNumPad.Text = "Numpad" + _buttonCount;
+                lblNumPad.Text = "Numpad" + i;
                 lblNumPad.Size = new Size(53, 15);
                 lblNumPad.Location = new Point(Convert.ToInt16(_BUTTONSIZE.Width * 0.25), _BUTTONSIZE.Height - Convert.ToInt16((_BUTTONSIZE.Height * 0.35)));
-
-                //FOR INPUT DEVICE, NOT ENABLED DOESN'T WORK YET
-                /*
-                Label macroLbl = new Label();
-                macroLbl.Text = "Macro key:";
-                macroLbl.Size = new Size(60, 15);
-                macroLbl.Location = new Point(0, _BUTTONSIZE.Height - macroLbl.Size.Height);
-
-                TextBox macroTxt = new TextBox();
-                macroTxt.TextAlign = HorizontalAlignment.Center;
-                macroTxt.MaxLength = 1;
-                macroTxt.Size = new Size(30, 30);
-                macroTxt.Text = _currentConfig.MacroKey[_buttonCount];
-                macroTxt.Location = new Point(macroLbl.Width, _BUTTONSIZE.Height - macroTxt.Size.Height);
-                macroTxt.TextChanged += new EventHandler(MacroTextChanged);
-                */
-
-                //The entire button
+                
                 Button btn = new Button();
-                btn.Name = "btn" + _buttonCount;
+                btn.Name = "btn" + i;
                 btn.Size = _BUTTONSIZE;
-                btn.Location = new Point(_MARGIN + ((_buttonCount % _MAXROWS) * (_MARGIN + _BUTTONSIZE.Width)), _MARGIN + ((_buttonCount / _MAXROWS) * (_BUTTONSIZE.Height + _MARGIN)));
+                btn.Location = new Point(_MARGIN + ((i % _MAXROWS) * (_MARGIN + _BUTTONSIZE.Width)), _MARGIN + ((i / _MAXROWS) * (_BUTTONSIZE.Height + _MARGIN)));
                 btn.Click += new EventHandler(ButtonClick);
-
-                //btn.Controls.Add(macroLbl);
-                //btn.Controls.Add(macroTxt);
+                
                 btn.Controls.Add(fileBtn);
                 btn.Controls.Add(text);
                 btn.Controls.Add(delBtn);
                 btn.Controls.Add(lblNumPad);
                 Controls.Add(btn);
-
-                _buttonCount++;
             }
         }
 
-        /*void MacroTextChanged(object o, EventArgs e)
-        {
-            TextBox tb = ((TextBox)o);
-            _currentConfig.MacroKey[Convert.ToInt16(tb.Parent.Name.Substring(3))] = ((TextBox)o).Text;
-        }*/
-        
-        //if ENTER is pressed on the keyboard for usability
-        void TextKeyDown(object o, KeyEventArgs e)
+        private void TextKeyDown(object o, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -208,8 +149,8 @@ namespace MacroMachine
             }
         }
 
-        //Automatically saves the new filename
-        void TextboxTextChanged(object o, EventArgs e)
+        //When textbox is changed with enter or losefocus, change name of sound-file too
+        private void TextboxTextChanged(object o, EventArgs e)
         {
             TextBox tb = ((TextBox)o);
 
@@ -235,14 +176,14 @@ namespace MacroMachine
             }
         }
 
-        //Event, fired when button control is clicked
-        void ButtonClick(object o, EventArgs e)
+        //eventhandler to play the sound
+        private void ButtonClick(object o, EventArgs e)
         {
             SoundSystem.PlayMacro(Convert.ToInt16(((Button)o).Name.Substring(3)));
         }
 
-        //Dialog for choosing a file
-        void ButtonSoundDialog(object o, EventArgs e)
+        //♫ button eventhandler, chooses sound file for button
+        private void ButtonSoundDialog(object o, EventArgs e)
         {
             string savedir = _WORKINGDIR + "Sounds\\";
             if (!Directory.Exists(savedir))
@@ -283,8 +224,8 @@ namespace MacroMachine
 
         }
 
-        //Deletes sound
-        void ButtonDeleter(object o, EventArgs e)
+        //x button eventhandler, deletes sound
+        private void ButtonDeleter(object o, EventArgs e)
         {
             int num = Convert.ToInt16(((Button)o).Parent.Name.Substring(3));
             File.Delete(_currentConfig.Sounds[num]);
@@ -293,7 +234,7 @@ namespace MacroMachine
             text.Text = "";
         }
 
-        //makes sure the config is saved when the form closes
+        //Save on close window
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             BinaryFormatter bf = new BinaryFormatter();
@@ -304,7 +245,6 @@ namespace MacroMachine
             }
         }
 
-        //Called externally when something has been recorded
         public void UpdateTextbox(int btnNum, string text)
         {
             Button btn = (Button)Controls.Find("btn" + btnNum, true).First();
