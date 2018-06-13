@@ -11,7 +11,7 @@ namespace MacroMachine
     {
         public readonly string _WORKINGDIR;
         public static Form1 _currentForm;
-
+        private ComboBox DeviceBox;
         private Config _currentConfig;
         private const int _MARGIN = 40;
         private const int _MAXROWS = 5;
@@ -66,17 +66,29 @@ namespace MacroMachine
         private void CreateControls()
         {
             //Devices combobox
-            ComboBox cb2 = new ComboBox();
-            cb2.Size = new Size(200, 20);
-            cb2.Location = new Point((_SCREENWIDTH - cb2.Size.Width - 15) - 10, 0);
-            cb2.SelectedIndexChanged += new EventHandler(SetOutputDeviceNumber);
-            Controls.Add(cb2);
+            DeviceBox = new ComboBox();
+            DeviceBox.Size = new Size(200, 20);
+            DeviceBox.Location = new Point((_SCREENWIDTH - DeviceBox.Size.Width - 15) - 10, 0);
+            DeviceBox.SelectedIndexChanged += new EventHandler(SetOutputDeviceNumber);
+            Controls.Add(DeviceBox);
 
             //"Output" Label
             Label inputLbl2 = new Label();
             inputLbl2.Size = new Size(45, 15);
-            inputLbl2.Location = new Point(cb2.Location.X - inputLbl2.Size.Width, 3);
+            inputLbl2.Location = new Point(DeviceBox.Location.X - inputLbl2.Size.Width, 3);
             inputLbl2.Text = "Output:";
+
+            Button btnOutput = new Button();
+            btnOutput.Location = new Point(inputLbl2.Location.X - 450, 3);
+            btnOutput.Size = new Size(200, 20);
+            btnOutput.Text = "Load Output Devices";
+            btnOutput.Click += new EventHandler(BtnLoadOutputDevices);
+
+            Button btnInput = new Button();
+            btnInput.Location = new Point(inputLbl2.Location.X - 250, 3);
+            btnInput.Size = new Size(200, 20);
+            btnInput.Text = "Load Input Devices";
+            btnInput.Click += new EventHandler(BtnLoadInputDevices);
 
             //Bottom left tip label
             Label lblTip = new Label();
@@ -86,17 +98,37 @@ namespace MacroMachine
 
             Controls.Add(inputLbl2);
             Controls.Add(lblTip);
+            Controls.Add(btnInput);
+            Controls.Add(btnOutput);
 
-            cb2.Items.AddRange(SoundSystem.GetDevices());
-            cb2.SelectedIndex = _currentConfig.CurrentOutputDevice;
+            DeviceBox.Items.AddRange(SoundSystem.GetDevices(_currentConfig.CurrentDeviceType));
+            DeviceBox.SelectedIndex = _currentConfig.CurrentOutputDevice;
         }
         
+        //Button event to load output devices
+        private void BtnLoadOutputDevices(object o, EventArgs e)
+        {
+            DeviceBox.Items.Clear();
+            DeviceBox.Items.AddRange(SoundSystem.GetDevices(DeviceType.OutputDevice));
+            _currentConfig.CurrentDeviceType = DeviceType.OutputDevice;
+        }
+
+        //Button event to load input devices
+        private void BtnLoadInputDevices(object o, EventArgs e)
+        {
+            DeviceBox.Items.Clear();
+            DeviceBox.Items.AddRange(SoundSystem.GetDevices(DeviceType.InputDevice));
+            _currentConfig.CurrentDeviceType = DeviceType.InputDevice;
+        }
+
+        //EventHandler for choosing a device in DeviceBox
         private void SetOutputDeviceNumber(object o, EventArgs e)
         {
             ComboBox cb = (ComboBox)o;
             _currentConfig.CurrentOutputDevice = cb.SelectedIndex;
         }
 
+        //Dynamically Create Buttons
         private void CreateButtons()
         {
             for (int i = 0; i < _MAXBUTTONS; i++)
@@ -212,11 +244,13 @@ namespace MacroMachine
 
                     if (File.Exists(savedir + fullName))
                     {
-                        File.Delete(savedir + fullName);
+                        if (!File.Equals(savedir + fullName, fd.FileName))
+                        {
+                            File.Delete(savedir + fullName);
+                            File.Copy(fd.FileName, savedir + fullName);
+                        }
                     }
-
-                    File.Copy(fd.FileName, savedir + fullName);
-
+                    
                     TextBox tb = (TextBox)((Button)o).Parent.Controls.Find("Text", true).First();
                     tb.Text = name;
                 }

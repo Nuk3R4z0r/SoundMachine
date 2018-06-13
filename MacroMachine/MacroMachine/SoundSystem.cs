@@ -43,13 +43,23 @@ namespace MacroMachine
         }
 
         //For the dropdown menu and NAudio
-        public static string[] GetDevices()
+        public static string[] GetDevices(DeviceType dvt)
         {
             List<string> value = new List<string>();
 
-            for (int deviceId = 0; deviceId < WaveOut.DeviceCount; deviceId++)
+            if(dvt == DeviceType.OutputDevice)
             {
-                value.Add(WaveOut.GetCapabilities(deviceId).ProductName);
+                for (int deviceId = 0; deviceId < WaveOut.DeviceCount; deviceId++)
+                {
+                    value.Add(WaveOut.GetCapabilities(deviceId).ProductName);
+                }
+            }
+            else
+            {
+                for (int deviceId = 0; deviceId < WaveIn.DeviceCount; deviceId++)
+                {
+                    value.Add(WaveIn.GetCapabilities(deviceId).ProductName);
+                }
             }
 
             return value.ToArray();

@@ -9,3 +9,16 @@ c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\o
 c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\obj\Debug\MacroMachine.Form1.resources
 c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\bin\Debug\NAudio.dll
 c:\users\kevin\documents\visual studio 2017\Projects\MacroMachine\MacroMachine\bin\Debug\NAudio.xml
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\bin\Debug\MacroMachine.exe.config
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\bin\Debug\MacroMachine.exe
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\bin\Debug\MacroMachine.pdb
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\bin\Debug\NAudio.dll
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\bin\Debug\NAudio.xml
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.Form1.resources
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.Properties.Resources.resources
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.csproj.GenerateResource.cache
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.csproj.CoreCompileInputs.cache
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.csproj.CopyComplete
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.exe
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.pdb
+C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.csprojAssemblyReference.cache
