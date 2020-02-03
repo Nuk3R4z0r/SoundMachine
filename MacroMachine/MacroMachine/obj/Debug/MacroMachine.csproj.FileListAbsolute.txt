@@ -22,3 +22,16 @@ C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug
 C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.exe
 C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.pdb
 C:\Users\Kevin\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.csprojAssemblyReference.cache
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\bin\Debug\MacroMachine.exe.config
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\bin\Debug\MacroMachine.exe
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\bin\Debug\MacroMachine.pdb
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\bin\Debug\NAudio.dll
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\bin\Debug\NAudio.xml
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.csprojAssemblyReference.cache
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.Form1.resources
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.Properties.Resources.resources
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.csproj.GenerateResource.cache
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.csproj.CoreCompileInputs.cache
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.csproj.CopyComplete
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.exe
+C:\Users\Nuke\Documents\GitHub\MacroMachine\MacroMachine\MacroMachine\obj\Debug\MacroMachine.pdb

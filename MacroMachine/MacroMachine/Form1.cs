@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Threading;
 
 namespace MacroMachine
 {
@@ -11,7 +12,8 @@ namespace MacroMachine
     {
         public readonly string _WORKINGDIR;
         public static Form1 _currentForm;
-        private ComboBox DeviceBox;
+        private ComboBox DeviceOutBox;
+        private ComboBox DeviceInBox;
         private Config _currentConfig;
         private const int _MARGIN = 40;
         private const int _MAXROWS = 5;
@@ -61,28 +63,44 @@ namespace MacroMachine
 
             CreateControls();
             CreateButtons();
+            Thread t = new Thread(SoundSystem.ContinuousInputPlayback);
+            t.Start();
+            
         }
 
         private void CreateControls()
         {
-            //Devices combobox
-            DeviceBox = new ComboBox();
-            DeviceBox.Size = new Size(200, 20);
-            DeviceBox.Location = new Point((_SCREENWIDTH - DeviceBox.Size.Width - 15) - 10, 3);
-            DeviceBox.SelectedIndexChanged += new EventHandler(SetOutputDeviceNumber);
-            Controls.Add(DeviceBox);
+            //Out Devices combobox
+            DeviceOutBox = new ComboBox();
+            DeviceOutBox.Size = new Size(200, 20);
+            DeviceOutBox.Location = new Point((_SCREENWIDTH - DeviceOutBox.Size.Width - 15) - 10, 3);
+            DeviceOutBox.SelectedIndexChanged += new EventHandler(SetOutputDeviceNumber);
+            Controls.Add(DeviceOutBox);
 
-            //"Device" Label
+            //"Device Out" Label
+            Label inputLbl3 = new Label();
+            inputLbl3.Size = new Size(120, 15);
+            inputLbl3.Location = new Point(DeviceOutBox.Location.X - inputLbl3.Size.Width, 6);
+            inputLbl3.Text = "Playback device:";
+
+            //In Devices combobox
+            DeviceInBox = new ComboBox();
+            DeviceInBox.Size = new Size(200, 20);
+            DeviceInBox.Location = new Point(DeviceOutBox.Location.X - DeviceOutBox.Size.Width - inputLbl3.Size.Width, 3);
+            DeviceInBox.SelectedIndexChanged += new EventHandler(SetInputDeviceNumber);
+            Controls.Add(DeviceInBox);
+
+            //"Device In" Label
             Label inputLbl2 = new Label();
             inputLbl2.Size = new Size(100, 15);
-            inputLbl2.Location = new Point(DeviceBox.Location.X - inputLbl2.Size.Width, 6);
-            inputLbl2.Text = "Playback device:";
+            inputLbl2.Location = new Point(DeviceInBox.Location.X - inputLbl2.Size.Width, 6);
+            inputLbl2.Text = "Input device:";
 
             Button btnOutput = new Button();
-            btnOutput.Location = new Point(inputLbl2.Location.X - 230, 3);
-            btnOutput.Size = new Size(200, 20);
-            btnOutput.Text = "Load Output Devices";
-            btnOutput.Click += new EventHandler(BtnLoadOutputDevices);
+            btnOutput.Location = new Point(10, 3);
+            btnOutput.Size = new Size(100, 20);
+            btnOutput.Text = "Load Devices";
+            btnOutput.Click += new EventHandler(BtnLoadDevices);
 
             //Bottom left tip label
             Label lblTip = new Label();
@@ -90,28 +108,45 @@ namespace MacroMachine
             lblTip.Size = new Size(300, 15);
             lblTip.Location = new Point(15, _SCREENHEIGHT - 60);
 
+            TrackBar tbVolume = new TrackBar();
+            tbVolume.Name = "tbVolume";
+            tbVolume.Size = new Size(300, 15);
+            tbVolume.TickFrequency = 2;
+            tbVolume.Location = new Point(_SCREENWIDTH - tbVolume.Size.Width - 20, _SCREENHEIGHT - tbVolume.Size.Height - 30);
+            tbVolume.ValueChanged += new EventHandler(SetVolume);
+
+            Controls.Add(tbVolume);
             Controls.Add(inputLbl2);
+            Controls.Add(inputLbl3);
             Controls.Add(lblTip);
             Controls.Add(btnOutput);
 
-            LoadOutputDevices();
+            LoadDevices();
         }
         
         //Button event to load output devices
-        private void BtnLoadOutputDevices(object o, EventArgs e)
+        private void BtnLoadDevices(object o, EventArgs e)
         {
-            LoadOutputDevices();
+            LoadDevices();
         }
 
-        private void LoadOutputDevices()
+        private void LoadDevices()
         {
-            DeviceBox.Items.Clear();
-            DeviceBox.Items.AddRange(SoundSystem.GetDevices());
+            DeviceOutBox.Items.Clear();
+            DeviceOutBox.Items.AddRange(SoundSystem.GetOutputDevices());
+            DeviceInBox.Items.Clear();
+            DeviceInBox.Items.AddRange(SoundSystem.GetInputDevices());
 
-            if (_currentConfig.CurrentOutputDevice >= DeviceBox.Items.Count)
-                _currentConfig.CurrentOutputDevice = DeviceBox.Items.Count - 1;
+            if (_currentConfig.CurrentOutputDevice >= DeviceOutBox.Items.Count)
+                _currentConfig.CurrentOutputDevice = DeviceOutBox.Items.Count - 1;
 
-            DeviceBox.SelectedIndex = _currentConfig.CurrentOutputDevice;
+            if (_currentConfig.CurrentInputDevice >= DeviceInBox.Items.Count)
+                _currentConfig.CurrentInputDevice = DeviceInBox.Items.Count - 1;
+
+
+            DeviceOutBox.SelectedIndex = _currentConfig.CurrentOutputDevice;
+            DeviceInBox.SelectedIndex = _currentConfig.CurrentInputDevice;
+            SoundSystem.resetListener();
         }
         
         //EventHandler for choosing a device in DeviceBox
@@ -119,6 +154,15 @@ namespace MacroMachine
         {
             ComboBox cb = (ComboBox)o;
             _currentConfig.CurrentOutputDevice = cb.SelectedIndex;
+            SoundSystem.resetListener();
+        }
+
+        //EventHandler for choosing a device in DeviceBox
+        private void SetInputDeviceNumber(object o, EventArgs e)
+        {
+            ComboBox cb = (ComboBox)o;
+            _currentConfig.CurrentInputDevice = cb.SelectedIndex;
+            SoundSystem.resetListener();
         }
 
         //Dynamically Create Buttons
@@ -139,7 +183,7 @@ namespace MacroMachine
                 delBtn.Text = "x";
                 delBtn.Size = new Size(30, 30);
                 delBtn.Location = new Point(_BUTTONSIZE.Width - 30, 0);
-                delBtn.Click += new EventHandler(ButtonDeleter);
+                delBtn.Click += new EventHandler(ButtonClickDelete);
 
                 Button fileBtn = new Button();
                 fileBtn.Text = "♫";
@@ -156,7 +200,7 @@ namespace MacroMachine
                 btn.Name = "btn" + i;
                 btn.Size = _BUTTONSIZE;
                 btn.Location = new Point(_MARGIN + ((i % _MAXROWS) * (_MARGIN + _BUTTONSIZE.Width)), _MARGIN + ((i / _MAXROWS) * (_BUTTONSIZE.Height + _MARGIN)));
-                btn.Click += new EventHandler(ButtonClick);
+                btn.Click += new EventHandler(ButtonClickPlay);
                 
                 btn.Controls.Add(fileBtn);
                 btn.Controls.Add(text);
@@ -202,7 +246,7 @@ namespace MacroMachine
         }
 
         //eventhandler to play the sound
-        private void ButtonClick(object o, EventArgs e)
+        private void ButtonClickPlay(object o, EventArgs e)
         {
             SoundSystem.PlayMacro(Convert.ToInt16(((Button)o).Name.Substring(3)));
         }
@@ -226,8 +270,7 @@ namespace MacroMachine
             {
                 string fullName = fd.FileName.Substring(fd.FileName.LastIndexOf('\\') + 1);
                 string name = fullName.Substring(0, fullName.LastIndexOf('.'));
-                if (!_currentConfig.Sounds.Contains(savedir + fullName))
-                {
+                
                     _currentConfig.Texts[id] = name;
                     if (_currentConfig.Sounds[id] != null)
                     {
@@ -240,19 +283,20 @@ namespace MacroMachine
                         if (!File.Equals(savedir + fullName, fd.FileName))
                         {
                             File.Delete(savedir + fullName);
-                            File.Copy(fd.FileName, savedir + fullName);
+                            
                         }
                     }
-                    
+
+                    File.Copy(fd.FileName, savedir + fullName);
+
                     TextBox tb = (TextBox)((Button)o).Parent.Controls.Find("Text", true).First();
                     tb.Text = name;
-                }
+                
             }
-
         }
 
         //x button eventhandler, deletes sound
-        private void ButtonDeleter(object o, EventArgs e)
+        private void ButtonClickDelete(object o, EventArgs e)
         {
             int num = Convert.ToInt16(((Button)o).Parent.Name.Substring(3));
             File.Delete(_currentConfig.Sounds[num]);
@@ -270,6 +314,8 @@ namespace MacroMachine
             {
                 bf.Serialize(sw.BaseStream, _currentConfig);
             }
+
+            SoundSystem.Kill();
         }
 
         public void UpdateTextbox(int btnNum, string text)
@@ -277,6 +323,12 @@ namespace MacroMachine
             Button btn = (Button)Controls.Find("btn" + btnNum, true).First();
             TextBox tb = (TextBox)btn.Controls.Find("Text", true).First();
             tb.Text = text;
+        }
+
+        private void SetVolume(object o, EventArgs e)
+        {
+            TrackBar tbTemp = (TrackBar)Controls.Find("tbVolume", true).First();
+            SoundSystem.SetVolume(tbTemp.Value);
         }
     }
 }

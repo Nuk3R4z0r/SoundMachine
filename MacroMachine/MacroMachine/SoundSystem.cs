@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NAudio.Wave;
 using NAudio;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace MacroMachine
@@ -12,9 +13,15 @@ namespace MacroMachine
         private static WasapiLoopbackCapture _waveSource;
         private static WaveFileWriter _waveFile;
         private static bool _readyForRecording = true;
+        private static bool _killSignal = false;
+        private static bool _stopListening = false;
         //Lists so that mulitple sounds can be played on the same time
-        private static List<WaveFileReader> readers = new List<WaveFileReader>();
+        private static List<IWaveProvider> readers = new List<IWaveProvider>();
         private static List<WaveOutEvent> players = new List<WaveOutEvent>();
+        private static WaveInEvent continuousWi;
+        private static WaveOutEvent continuousWo;
+        private static BufferedWaveProvider provider;
+        private static float volume;
 
         //For playing sounds, called from KeyLogger.cs
         public static void PlayMacro(int number)
@@ -34,12 +41,13 @@ namespace MacroMachine
                 {
                     WaveFileReader reader = new WaveFileReader(fi);
                     readers.Add(reader);
+                    
                     try
                     {
                         wo.Init(reader);
                         wo.Play();
                     }
-                    catch(MmException e)
+                    catch (MmException e)
                     {
                         MessageBox.Show("Error!\n" + e.Message + "\n\nCan't play audio:\nSelected audio device is already in use!");
                     }
@@ -48,12 +56,24 @@ namespace MacroMachine
         }
 
         //For the dropdown menu and NAudio
-        public static string[] GetDevices()
+        public static string[] GetOutputDevices()
         {
             List<string> value = new List<string>();
             for (int deviceId = 0; deviceId < WaveOut.DeviceCount; deviceId++)
             {
                 value.Add(WaveOut.GetCapabilities(deviceId).ProductName);
+            }
+
+            return value.ToArray();
+        }
+
+        //For the dropdown menu and NAudio
+        public static string[] GetInputDevices()
+        {
+            List<string> value = new List<string>();
+            for (int deviceId = 0; deviceId < WaveIn.DeviceCount; deviceId++)
+            {
+                value.Add(WaveIn.GetCapabilities(deviceId).ProductName);
             }
 
             return value.ToArray();
@@ -112,9 +132,11 @@ namespace MacroMachine
         {
             WaveOutEvent wo = (WaveOutEvent)sender;
             int index = players.FindIndex(a => a == wo);
-            readers[index].Close();
-            readers[index].Dispose();
-            wo.Dispose();
+            players[index].Dispose();
+            players[index] = null;
+            players.RemoveAt(index);
+            readers[index] = null;
+            readers.RemoveAt(index);
         }
 
         //Event, writes data from buffer
@@ -141,6 +163,55 @@ namespace MacroMachine
                 _waveFile.Dispose();
                 _waveFile = null;
             }
+        }
+
+        public static void ContinuousInputPlayback()
+        {
+            while (_killSignal == false)
+            {
+                _stopListening = false;
+                continuousWi = new WaveInEvent();
+                continuousWi.WaveFormat = new WaveFormat(96000, 24, 1);
+
+                continuousWo = new WaveOutEvent();
+                continuousWi.DeviceNumber = Config._currentConfig.CurrentInputDevice;
+                continuousWo.DeviceNumber = Config._currentConfig.CurrentOutputDevice;
+
+                provider = new BufferedWaveProvider(continuousWi.WaveFormat);
+                continuousWo.Init(provider);
+                continuousWi.DataAvailable += new EventHandler<WaveInEventArgs>(waveInput_DataAvailable);
+                continuousWi.StartRecording();
+
+                while (_stopListening == false) { Thread.Sleep(1); }
+
+                continuousWi.StopRecording();
+                provider.ClearBuffer();
+                continuousWo.Stop();
+            }
+        }
+
+        //Event, writes data from buffer
+        private static void waveInput_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            provider.AddSamples(e.Buffer, 0, e.Buffer.Length);
+            continuousWo.Volume = volume;
+            continuousWo.Play();
+        }
+
+        public static void resetListener()
+        {
+            _stopListening = true;
+        }
+
+        public static void Kill()
+        {
+            _killSignal = true;
+            _stopListening = true;
+        }
+
+        public static void SetVolume(int vol)
+        {
+            volume = vol / 10.0f;
         }
     }
 }

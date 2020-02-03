@@ -7143,31 +7143,6 @@
               LPARAM lParam  
             </summary>        
         </member>
-        <member name="M:NAudio.Wave.Compression.AcmInterop.acmFormatSuggest(System.IntPtr,NAudio.Wave.WaveFormat,NAudio.Wave.WaveFormat,System.Int32,NAudio.Wave.Compression.AcmFormatSuggestFlags)">
-            <summary>
-            http://msdn.microsoft.com/en-us/library/dd742916%28VS.85%29.aspx
-            MMRESULT acmFormatSuggest(
-            HACMDRIVER had,          
-            LPWAVEFORMATEX pwfxSrc,  
-            LPWAVEFORMATEX pwfxDst,  
-            DWORD cbwfxDst,          
-            DWORD fdwSuggest);
-            </summary>
-        </member>
-        <member name="M:NAudio.Wave.Compression.AcmInterop.acmStreamOpen(System.IntPtr@,System.IntPtr,NAudio.Wave.WaveFormat,NAudio.Wave.WaveFormat,NAudio.Wave.Compression.WaveFilter,System.IntPtr,System.IntPtr,NAudio.Wave.Compression.AcmStreamOpenFlags)">
-            <summary>
-            http://msdn.microsoft.com/en-us/library/dd742928%28VS.85%29.aspx
-            MMRESULT acmStreamOpen(
-              LPHACMSTREAM    phas,       
-              HACMDRIVER      had,        
-              LPWAVEFORMATEX  pwfxSrc,    
-              LPWAVEFORMATEX  pwfxDst,    
-              LPWAVEFILTER    pwfltr,     
-              DWORD_PTR       dwCallback, 
-              DWORD_PTR       dwInstance, 
-              DWORD           fdwOpen     
-            </summary>
-        </member>
         <member name="M:NAudio.Wave.Compression.AcmInterop.acmStreamOpen2(System.IntPtr@,System.IntPtr,System.IntPtr,System.IntPtr,NAudio.Wave.Compression.WaveFilter,System.IntPtr,System.IntPtr,NAudio.Wave.Compression.AcmStreamOpenFlags)">
             <summary>
             A version with pointers for troubleshooting
@@ -7634,11 +7609,6 @@
             </summary>
             <param name="waveFormat">The SupportedWaveFormat</param>
             <returns>true if supported</returns>
-        </member>
-        <member name="M:NAudio.Wave.WaveCapabilitiesHelpers.GetNameFromGuid(System.Guid)">
-            <summary>
-            The device name from the registry if supported
-            </summary>
         </member>
         <member name="T:NAudio.Wave.WaveInEventArgs">
             <summary>
@@ -9501,44 +9471,6 @@
             <summary>
             Returns the number of extra bytes used by this waveformat. Often 0,
             except for compressed formats which store extra data after the WAVEFORMATEX header
-            </summary>
-        </member>
-        <member name="T:NAudio.Wave.WaveFormatCustomMarshaler">
-            <summary>
-            Custom marshaller for WaveFormat structures
-            </summary>
-        </member>
-        <member name="M:NAudio.Wave.WaveFormatCustomMarshaler.GetInstance(System.String)">
-            <summary>
-            Gets the instance of this marshaller
-            </summary>
-            <param name="cookie"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NAudio.Wave.WaveFormatCustomMarshaler.CleanUpManagedData(System.Object)">
-            <summary>
-            Clean up managed data
-            </summary>
-        </member>
-        <member name="M:NAudio.Wave.WaveFormatCustomMarshaler.CleanUpNativeData(System.IntPtr)">
-            <summary>
-            Clean up native data
-            </summary>
-            <param name="pNativeData"></param>
-        </member>
-        <member name="M:NAudio.Wave.WaveFormatCustomMarshaler.GetNativeDataSize">
-            <summary>
-            Get native data size
-            </summary>        
-        </member>
-        <member name="M:NAudio.Wave.WaveFormatCustomMarshaler.MarshalManagedToNative(System.Object)">
-            <summary>
-            Marshal managed to native
-            </summary>
-        </member>
-        <member name="M:NAudio.Wave.WaveFormatCustomMarshaler.MarshalNativeToManaged(System.IntPtr)">
-            <summary>
-            Marshal Native to Managed
             </summary>
         </member>
         <member name="T:NAudio.Wave.WaveFormatEncoding">
