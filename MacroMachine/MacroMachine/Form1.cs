@@ -113,6 +113,7 @@ namespace MacroMachine
             tbVolume.Size = new Size(300, 15);
             tbVolume.TickFrequency = 2;
             tbVolume.Location = new Point(_SCREENWIDTH - tbVolume.Size.Width - 20, _SCREENHEIGHT - tbVolume.Size.Height - 30);
+            tbVolume.Value = _currentConfig.CurrentVolume;
             tbVolume.ValueChanged += new EventHandler(SetVolume);
 
             Controls.Add(tbVolume);
@@ -328,7 +329,7 @@ namespace MacroMachine
         private void SetVolume(object o, EventArgs e)
         {
             TrackBar tbTemp = (TrackBar)Controls.Find("tbVolume", true).First();
-            SoundSystem.SetVolume(tbTemp.Value);
+            _currentConfig.CurrentVolume = tbTemp.Value;
         }
     }
 }

@@ -18,3 +18,10 @@ MacroMachine/MacroMachine/obj/Release/MacroMachine.csproj.CoreCompileInputs.cach
 MacroMachine/MacroMachine/obj/Release/MacroMachine.csproj.FileListAbsolute.txt
 MacroMachine/MacroMachine/obj/Release/MacroMachine.csproj.GenerateResource.Cache
 MacroMachine/MacroMachine/obj/Release/MacroMachine.csprojAssemblyReference.cache
+*.pdb
+MacroMachine/MacroMachine/obj/Debug/MacroMachine.pdb
+*.cache
+*.ide-wal
+*.ide-shm
+MacroMachine/.vs/MacroMachine/v15/.suo
+*.ide

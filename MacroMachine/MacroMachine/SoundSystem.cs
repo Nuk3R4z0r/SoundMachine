@@ -16,7 +16,7 @@ namespace MacroMachine
         private static bool _killSignal = false;
         private static bool _stopListening = false;
         //Lists so that mulitple sounds can be played on the same time
-        private static List<IWaveProvider> readers = new List<IWaveProvider>();
+        private static List<WaveFileReader> readers = new List<WaveFileReader>();
         private static List<WaveOutEvent> players = new List<WaveOutEvent>();
         private static WaveInEvent continuousWi;
         private static WaveOutEvent continuousWo;
@@ -41,7 +41,7 @@ namespace MacroMachine
                 {
                     WaveFileReader reader = new WaveFileReader(fi);
                     readers.Add(reader);
-                    
+
                     try
                     {
                         wo.Init(reader);
@@ -135,6 +135,7 @@ namespace MacroMachine
             players[index].Dispose();
             players[index] = null;
             players.RemoveAt(index);
+            readers[index].Dispose();
             readers[index] = null;
             readers.RemoveAt(index);
         }
@@ -194,7 +195,7 @@ namespace MacroMachine
         private static void waveInput_DataAvailable(object sender, WaveInEventArgs e)
         {
             provider.AddSamples(e.Buffer, 0, e.Buffer.Length);
-            continuousWo.Volume = volume;
+            continuousWo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
             continuousWo.Play();
         }
 
@@ -207,11 +208,6 @@ namespace MacroMachine
         {
             _killSignal = true;
             _stopListening = true;
-        }
-
-        public static void SetVolume(int vol)
-        {
-            volume = vol / 10.0f;
         }
     }
 }

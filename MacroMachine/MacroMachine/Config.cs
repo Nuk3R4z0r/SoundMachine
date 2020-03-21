@@ -10,6 +10,7 @@ namespace MacroMachine
         public string[] Texts { get; set; }
         public int CurrentOutputDevice { get; set; }
         public int CurrentInputDevice { get; set; }
+        public int CurrentVolume { get; set; }
 
         public Config(int maxButtons)
         {
@@ -17,6 +18,7 @@ namespace MacroMachine
             Texts = new string[maxButtons];
             CurrentOutputDevice = 0;
             CurrentInputDevice = 0;
+            CurrentVolume = 0;
             _currentConfig = this;
         }
 
@@ -25,7 +27,8 @@ namespace MacroMachine
             Sounds = blueprint.Sounds;
             Texts = blueprint.Texts;
             CurrentOutputDevice = blueprint.CurrentOutputDevice;
-            CurrentInputDevice = blueprint.CurrentOutputDevice;
+            CurrentInputDevice = blueprint.CurrentInputDevice;
+            CurrentVolume = blueprint.CurrentVolume;
             _currentConfig = this;
         }
     }
