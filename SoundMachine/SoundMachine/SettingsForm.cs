@@ -21,6 +21,7 @@ namespace SoundMachine
             interruptInputBox.Checked = Config._currentConfig.InterruptKeys;
             numSoundsBox.Value = Config._currentConfig.MaxSounds;
             ChangedMaxSounds = false;
+            inputCheckBox.Checked = Config._currentConfig.InputPassthroughEnabled;
         }
 
         //Button event to load output devices
@@ -55,6 +56,11 @@ namespace SoundMachine
                 Process.Start(Info);
                 Form1._currentForm.Close();
             }
+        }
+
+        private void inputCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Form1._currentForm.ToggleInputDevices();
         }
     }
 }

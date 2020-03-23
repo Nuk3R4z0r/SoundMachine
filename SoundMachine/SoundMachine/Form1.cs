@@ -66,8 +66,14 @@ namespace SoundMachine
 
             CreateControls();
             CreateButtons();
-            Thread t = new Thread(SoundSystem.ContinuousInputPlayback);
-            t.Start();
+
+            if (_currentConfig.InputPassthroughEnabled)
+            {
+                Thread t = new Thread(SoundSystem.ContinuousInputPlayback);
+                t.Start();
+            }
+            else
+                DeviceInBox.Enabled = false;
         }
 
         private void CreateControls()
@@ -362,7 +368,7 @@ namespace SoundMachine
                 bf.Serialize(sw.BaseStream, _currentConfig);
             }
 
-            SoundSystem.Kill();
+            SoundSystem.KillInputListener();
         }
 
         public void UpdateTextbox(int btnNum, string text)
@@ -376,6 +382,26 @@ namespace SoundMachine
         {
             TrackBar tbTemp = (TrackBar)Controls.Find("tbVolume", true).First();
             _currentConfig.CurrentVolume = tbTemp.Value;
+        }
+
+        public void ToggleInputDevices()
+        {
+            _currentConfig.InputPassthroughEnabled = !_currentConfig.InputPassthroughEnabled;
+
+            BeginInvoke(new MethodInvoker(delegate
+            {
+                DeviceInBox.Enabled = _currentConfig.InputPassthroughEnabled;
+            }));
+
+            if (_currentConfig.InputPassthroughEnabled == true)
+            {
+                Thread t = new Thread(SoundSystem.ContinuousInputPlayback);
+                t.Start();
+            }
+            else
+            {
+                SoundSystem.KillInputListener();
+            }
         }
     }
 }

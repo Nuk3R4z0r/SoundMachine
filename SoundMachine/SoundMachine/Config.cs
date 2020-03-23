@@ -16,6 +16,7 @@ namespace SoundMachine
         public int SoundPlaybackDevice { get; set; }
         public int CurrentVolume { get; set; }
         public bool DisableKeys { get; set; }
+        public bool InputPassthroughEnabled { get; set; }
         public bool InputPlaybackEnabled { get; set; }
         public bool SoundPlaybackEnabled { get; set; }
         public bool InterruptKeys { get; set; }
@@ -33,6 +34,7 @@ namespace SoundMachine
             CurrentInputDevice = 0;
             SoundPlaybackDevice = 0;
             CurrentVolume = 0;
+            InputPassthroughEnabled = true;
             InputPlaybackEnabled = true;
             SoundPlaybackEnabled = true;
             InterruptKeys = false;
@@ -77,6 +79,7 @@ namespace SoundMachine
             CurrentInputDevice = blueprint.CurrentInputDevice;
             SoundPlaybackDevice = blueprint.SoundPlaybackDevice;
             CurrentVolume = blueprint.CurrentVolume;
+            InputPassthroughEnabled = blueprint.InputPassthroughEnabled;
             InputPlaybackEnabled = blueprint.InputPlaybackEnabled;
             SoundPlaybackEnabled = blueprint.SoundPlaybackEnabled;
             InterruptKeys = blueprint.InterruptKeys;

@@ -13,8 +13,8 @@ namespace SoundMachine
         private static WasapiLoopbackCapture _waveSource;
         private static WaveFileWriter _waveFile;
         private static bool _readyForRecording = true;
-        private static bool _killSignal = false;
-        private static bool _stopListening = false;
+        private static bool _killSignal;
+        private static bool _stopListening;
         //Lists so that mulitple sounds can be played on the same time
         private static List<WaveFileReader> readers = new List<WaveFileReader>();
         private static List<WaveOutEvent> players = new List<WaveOutEvent>();
@@ -177,11 +177,12 @@ namespace SoundMachine
 
         public static void ContinuousInputPlayback()
         {
+            _killSignal = false;
             while (_killSignal == false)
             {
                 _stopListening = false;
                 continuousWi = new WaveInEvent();
-                continuousWi.WaveFormat = new WaveFormat(96000, 24, 1);
+                continuousWi.WaveFormat = new WaveFormat(48000, 1);
 
                 continuousWo = new WaveOutEvent();
                 continuousWi.DeviceNumber = Config._currentConfig.CurrentInputDevice;
@@ -191,8 +192,13 @@ namespace SoundMachine
                 continuousWo.Init(provider);
                 continuousWi.DataAvailable += new EventHandler<WaveInEventArgs>(waveInput_DataAvailable);
                 continuousWi.StartRecording();
+                continuousWo.Play();
 
-                while (_stopListening == false) { Thread.Sleep(1); }
+                while (_stopListening == false)
+                {
+                    continuousWo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
+                    Thread.Sleep(10);
+                }
 
                 continuousWi.StopRecording();
                 provider.ClearBuffer();
@@ -204,8 +210,6 @@ namespace SoundMachine
         private static void waveInput_DataAvailable(object sender, WaveInEventArgs e)
         {
             provider.AddSamples(e.Buffer, 0, e.Buffer.Length);
-            continuousWo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
-            continuousWo.Play();
         }
 
         public static void resetListener()
@@ -213,7 +217,7 @@ namespace SoundMachine
             _stopListening = true;
         }
 
-        public static void Kill()
+        public static void KillInputListener()
         {
             _killSignal = true;
             _stopListening = true;

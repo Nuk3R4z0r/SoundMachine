@@ -32,6 +32,7 @@
             this.interruptInputBox = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.numSoundsBox = new System.Windows.Forms.NumericUpDown();
+            this.inputCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numSoundsBox)).BeginInit();
             this.SuspendLayout();
             // 
@@ -88,11 +89,23 @@
             0});
             this.numSoundsBox.ValueChanged += new System.EventHandler(this.numSoundsBox_ValueChanged);
             // 
+            // inputCheckBox
+            // 
+            this.inputCheckBox.AutoSize = true;
+            this.inputCheckBox.Location = new System.Drawing.Point(13, 66);
+            this.inputCheckBox.Name = "inputCheckBox";
+            this.inputCheckBox.Size = new System.Drawing.Size(146, 17);
+            this.inputCheckBox.TabIndex = 5;
+            this.inputCheckBox.Text = "Enable input passthrough";
+            this.inputCheckBox.UseVisualStyleBackColor = true;
+            this.inputCheckBox.CheckedChanged += new System.EventHandler(this.inputCheckBox_CheckedChanged);
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(342, 63);
+            this.ClientSize = new System.Drawing.Size(342, 90);
+            this.Controls.Add(this.inputCheckBox);
             this.Controls.Add(this.numSoundsBox);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.interruptInputBox);
@@ -112,5 +125,6 @@
         private System.Windows.Forms.CheckBox interruptInputBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown numSoundsBox;
+        private System.Windows.Forms.CheckBox inputCheckBox;
     }
 }
