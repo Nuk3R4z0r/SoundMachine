@@ -1,5 +1,5 @@
 # SoundMachine
-Soundboard for playing sounds on numpad0-9. Can record by holding control and tapping the numpad0-9 you want to record to.
+Soundboard for playing sounds. Can record by holding control and holding the binding you've set per sound.
 
 You need a virtual device like VB-CABLE for this to work:
 https://www.vb-audio.com/Cable/index.htm
