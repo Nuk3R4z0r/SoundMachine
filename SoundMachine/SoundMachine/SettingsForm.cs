@@ -24,6 +24,7 @@ namespace SoundMachine
             inputCheckBox.Checked = Config._currentConfig.InputPassthroughEnabled;
             inputChannelsBox.SelectedIndex = Config._currentConfig.InputChannels - 1;
             inputSamplerateBox.SelectedIndex = inputSamplerateBox.FindStringExact(Config._currentConfig.InputSampleRate.ToString());
+            playbackCheckBox.Checked = Config._currentConfig.SoundPlaybackEnabled;
         }
 
         //Button event to load output devices
@@ -88,6 +89,11 @@ namespace SoundMachine
                 Config._currentConfig.InputSampleRate = Convert.ToInt32(inputSamplerateBox.Items[inputSamplerateBox.SelectedIndex]);
                 SoundSystem.resetListener();
             }
+        }
+
+        private void playbackCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            Config._currentConfig.SoundPlaybackEnabled = playbackCheckBox.Checked;
         }
     }
 }

@@ -5,6 +5,7 @@ using NAudio;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using NAudio.CoreAudioApi;
 
 namespace SoundMachine
 {
@@ -22,6 +23,22 @@ namespace SoundMachine
         private static WaveInEvent continuousWi;
         private static DirectSoundOut continuousWo;
         private static BufferedWaveProvider provider;
+        private static WaveMixerStream32 mixer;
+
+        public static void PlaySoundToDefaultOutput(string fi)
+        {
+            WaveOutEvent listenWo = new WaveOutEvent();
+            listenWo.DeviceNumber = -1;
+            listenWo.PlaybackStopped += new EventHandler<StoppedEventArgs>(PlayBackStopped);
+            listenWo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
+            players.Add(listenWo);
+
+            WaveFileReader reader = new WaveFileReader(fi);
+            readers.Add(reader);
+
+            listenWo.Init(reader);
+            listenWo.Play();
+        }
 
         //For playing sounds, called from KeyLogger.cs
         public static bool PlaySound(int number)
@@ -30,6 +47,7 @@ namespace SoundMachine
                 return false;
 
             string fi = Config._currentConfig.Sounds[number]; //gets location+filename of sound from config determined by numpad number 
+            
 
             if (fi != null && fi != "")
             {
@@ -44,12 +62,17 @@ namespace SoundMachine
                 {
                     WaveFileReader reader = new WaveFileReader(fi);
                     readers.Add(reader);
-
+                    
                     try
                     {
                         wo.Init(reader);
                         wo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
                         wo.Play();
+
+                        if (Config._currentConfig.SoundPlaybackEnabled)
+                        {
+                            PlaySoundToDefaultOutput(fi);
+                        }
                     }
                     catch (MmException e)
                     {

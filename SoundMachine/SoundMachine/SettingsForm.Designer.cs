@@ -36,8 +36,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.inputChannelsBox = new System.Windows.Forms.ComboBox();
             this.inputSamplerateBox = new System.Windows.Forms.ComboBox();
+            this.inputChannelsBox = new System.Windows.Forms.ComboBox();
+            this.playbackCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numSoundsBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -54,11 +55,11 @@
             // interruptInputBox
             // 
             this.interruptInputBox.AutoSize = true;
-            this.interruptInputBox.Location = new System.Drawing.Point(13, 42);
+            this.interruptInputBox.Location = new System.Drawing.Point(13, 63);
             this.interruptInputBox.Name = "interruptInputBox";
-            this.interruptInputBox.Size = new System.Drawing.Size(124, 17);
+            this.interruptInputBox.Size = new System.Drawing.Size(143, 17);
             this.interruptInputBox.TabIndex = 2;
-            this.interruptInputBox.Text = "Interrupt bound input";
+            this.interruptInputBox.Text = "Interrupt bound keypress";
             this.interruptInputBox.UseVisualStyleBackColor = true;
             this.interruptInputBox.CheckedChanged += new System.EventHandler(this.interruptInputBox_CheckedChanged);
             // 
@@ -98,7 +99,7 @@
             // inputCheckBox
             // 
             this.inputCheckBox.AutoSize = true;
-            this.inputCheckBox.Location = new System.Drawing.Point(13, 66);
+            this.inputCheckBox.Location = new System.Drawing.Point(13, 87);
             this.inputCheckBox.Name = "inputCheckBox";
             this.inputCheckBox.Size = new System.Drawing.Size(146, 17);
             this.inputCheckBox.TabIndex = 5;
@@ -130,25 +131,12 @@
             this.groupBox1.Controls.Add(this.inputChannelsBox);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Location = new System.Drawing.Point(13, 89);
+            this.groupBox1.Location = new System.Drawing.Point(13, 110);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(162, 110);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Input settings";
-            // 
-            // inputChannelsBox
-            // 
-            this.inputChannelsBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.inputChannelsBox.FormattingEnabled = true;
-            this.inputChannelsBox.Items.AddRange(new object[] {
-            "Mono",
-            "Stereo"});
-            this.inputChannelsBox.Location = new System.Drawing.Point(9, 32);
-            this.inputChannelsBox.Name = "inputChannelsBox";
-            this.inputChannelsBox.Size = new System.Drawing.Size(121, 21);
-            this.inputChannelsBox.TabIndex = 11;
-            this.inputChannelsBox.SelectedIndexChanged += new System.EventHandler(this.inputChannelsBox_SelectedIndexChanged);
             // 
             // inputSamplerateBox
             // 
@@ -163,11 +151,36 @@
             this.inputSamplerateBox.TabIndex = 12;
             this.inputSamplerateBox.SelectedIndexChanged += new System.EventHandler(this.inputSamplerateBox_SelectedIndexChanged);
             // 
+            // inputChannelsBox
+            // 
+            this.inputChannelsBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.inputChannelsBox.FormattingEnabled = true;
+            this.inputChannelsBox.Items.AddRange(new object[] {
+            "Mono",
+            "Stereo"});
+            this.inputChannelsBox.Location = new System.Drawing.Point(9, 32);
+            this.inputChannelsBox.Name = "inputChannelsBox";
+            this.inputChannelsBox.Size = new System.Drawing.Size(121, 21);
+            this.inputChannelsBox.TabIndex = 11;
+            this.inputChannelsBox.SelectedIndexChanged += new System.EventHandler(this.inputChannelsBox_SelectedIndexChanged);
+            // 
+            // playbackCheckBox
+            // 
+            this.playbackCheckBox.AutoSize = true;
+            this.playbackCheckBox.Location = new System.Drawing.Point(13, 40);
+            this.playbackCheckBox.Name = "playbackCheckBox";
+            this.playbackCheckBox.Size = new System.Drawing.Size(150, 17);
+            this.playbackCheckBox.TabIndex = 11;
+            this.playbackCheckBox.Text = "Playback to default output";
+            this.playbackCheckBox.UseVisualStyleBackColor = true;
+            this.playbackCheckBox.CheckedChanged += new System.EventHandler(this.playbackCheckBox_CheckedChanged);
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(342, 263);
+            this.Controls.Add(this.playbackCheckBox);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.inputCheckBox);
             this.Controls.Add(this.numSoundsBox);
@@ -197,5 +210,6 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ComboBox inputSamplerateBox;
         private System.Windows.Forms.ComboBox inputChannelsBox;
+        private System.Windows.Forms.CheckBox playbackCheckBox;
     }
 }
