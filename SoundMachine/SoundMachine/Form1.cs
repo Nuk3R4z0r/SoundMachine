@@ -384,23 +384,26 @@ namespace SoundMachine
             _currentConfig.CurrentVolume = tbTemp.Value;
         }
 
-        public void ToggleInputDevices()
+        public void ToggleInputDevices(bool state)
         {
-            _currentConfig.InputPassthroughEnabled = !_currentConfig.InputPassthroughEnabled;
+            if (_currentConfig.InputPassthroughEnabled != state)
+            {
+                _currentConfig.InputPassthroughEnabled = !_currentConfig.InputPassthroughEnabled;
 
-            BeginInvoke(new MethodInvoker(delegate
-            {
-                DeviceInBox.Enabled = _currentConfig.InputPassthroughEnabled;
-            }));
+                BeginInvoke(new MethodInvoker(delegate
+                {
+                    DeviceInBox.Enabled = _currentConfig.InputPassthroughEnabled;
+                }));
 
-            if (_currentConfig.InputPassthroughEnabled == true)
-            {
-                Thread t = new Thread(SoundSystem.ContinuousInputPlayback);
-                t.Start();
-            }
-            else
-            {
-                SoundSystem.KillInputListener();
+                if (_currentConfig.InputPassthroughEnabled == true)
+                {
+                    Thread t = new Thread(SoundSystem.ContinuousInputPlayback);
+                    t.Start();
+                }
+                else
+                {
+                    SoundSystem.KillInputListener();
+                }
             }
         }
     }

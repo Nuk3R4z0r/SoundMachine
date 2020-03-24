@@ -60,7 +60,10 @@ namespace SoundMachine
 
         private void inputCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            Form1._currentForm.ToggleInputDevices();
+            if(inputCheckBox.Checked == true)
+                Form1._currentForm.ToggleInputDevices(true);
+            else
+                Form1._currentForm.ToggleInputDevices(false);
         }
     }
 }
