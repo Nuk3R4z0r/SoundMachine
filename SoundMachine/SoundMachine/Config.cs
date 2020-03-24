@@ -15,9 +15,10 @@ namespace SoundMachine
         public int CurrentInputDevice { get; set; }
         public int SoundPlaybackDevice { get; set; }
         public int CurrentVolume { get; set; }
-        public bool DisableKeys { get; set; }
         public bool InputPassthroughEnabled { get; set; }
         public bool InputPlaybackEnabled { get; set; }
+        public int InputChannels { get; set; }
+        public int InputSampleRate { get; set; }
         public bool SoundPlaybackEnabled { get; set; }
         public bool InterruptKeys { get; set; }
 
@@ -36,6 +37,8 @@ namespace SoundMachine
             CurrentVolume = 0;
             InputPassthroughEnabled = true;
             InputPlaybackEnabled = true;
+            InputChannels = 1;
+            InputSampleRate = 44100;
             SoundPlaybackEnabled = true;
             InterruptKeys = false;
             _currentConfig = this;
@@ -43,9 +46,7 @@ namespace SoundMachine
 
         public Config(Config blueprint)
         {
-            MaxSounds = blueprint.MaxSounds;
-            if (MaxSounds < 10)
-                MaxSounds = 10;
+            MaxSounds = blueprint.MaxSounds < 10 ? 10 : blueprint.MaxSounds;
 
             Sounds = blueprint.Sounds ?? new string[MaxSounds];
             Texts = blueprint.Texts ?? new string[MaxSounds];
@@ -83,6 +84,8 @@ namespace SoundMachine
             InputPlaybackEnabled = blueprint.InputPlaybackEnabled;
             SoundPlaybackEnabled = blueprint.SoundPlaybackEnabled;
             InterruptKeys = blueprint.InterruptKeys;
+            InputChannels = blueprint.InputChannels == 0 ? 1 : blueprint.InputChannels;
+            InputSampleRate = blueprint.InputSampleRate == 0 ? 44100 : blueprint.InputSampleRate;
             _currentConfig = this;
         }
 

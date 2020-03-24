@@ -16,10 +16,11 @@ namespace SoundMachine
         private static bool _killSignal;
         private static bool _stopListening;
         //Lists so that mulitple sounds can be played on the same time
+        private static List<Guid> OutputGuids;
         private static List<WaveFileReader> readers = new List<WaveFileReader>();
         private static List<WaveOutEvent> players = new List<WaveOutEvent>();
         private static WaveInEvent continuousWi;
-        private static WaveOutEvent continuousWo;
+        private static DirectSoundOut continuousWo;
         private static BufferedWaveProvider provider;
 
         //For playing sounds, called from KeyLogger.cs
@@ -47,6 +48,7 @@ namespace SoundMachine
                     try
                     {
                         wo.Init(reader);
+                        wo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
                         wo.Play();
                     }
                     catch (MmException e)
@@ -62,10 +64,16 @@ namespace SoundMachine
         //For the dropdown menu and NAudio
         public static string[] GetOutputDevices()
         {
+            OutputGuids = new List<Guid>();
             List<string> value = new List<string>();
             for (int deviceId = 0; deviceId < WaveOut.DeviceCount; deviceId++)
             {
                 value.Add(WaveOut.GetCapabilities(deviceId).ProductName);
+            }
+
+            foreach (var device in DirectSoundOut.Devices)
+            {
+                OutputGuids.Add(device.Guid);
             }
 
             return value.ToArray();
@@ -182,24 +190,24 @@ namespace SoundMachine
             {
                 _stopListening = false;
                 continuousWi = new WaveInEvent();
-                continuousWi.WaveFormat = new WaveFormat(48000, 1);
-
-                continuousWo = new WaveOutEvent();
+                continuousWi.WaveFormat = new WaveFormat(Config._currentConfig.InputSampleRate, Config._currentConfig.InputChannels);
                 continuousWi.DeviceNumber = Config._currentConfig.CurrentInputDevice;
-                continuousWo.DeviceNumber = Config._currentConfig.CurrentOutputDevice;
+                
+                continuousWo = new DirectSoundOut(OutputGuids[Config._currentConfig.CurrentOutputDevice + 1], 40);
 
                 provider = new BufferedWaveProvider(continuousWi.WaveFormat);
-                continuousWo.Init(provider);
+                VolumeWaveProvider16 vSampleProvider = new VolumeWaveProvider16(provider);
+                continuousWo.Init(vSampleProvider);
                 continuousWi.DataAvailable += new EventHandler<WaveInEventArgs>(waveInput_DataAvailable);
                 continuousWi.StartRecording();
                 continuousWo.Play();
-
+                
                 while (_stopListening == false)
                 {
-                    continuousWo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
+                    vSampleProvider.Volume = Config._currentConfig.CurrentVolume / 10.0f;
                     Thread.Sleep(10);
                 }
-
+                
                 continuousWi.StopRecording();
                 provider.ClearBuffer();
                 continuousWo.Stop();

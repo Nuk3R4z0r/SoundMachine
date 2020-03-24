@@ -33,10 +33,13 @@ namespace SoundMachine
             while (isListening)
                 Thread.Sleep(10);
 
-            BeginInvoke(new MethodInvoker(delegate
-            {
-                Close();
-            }));
+            if(!IsDisposed)
+                {
+                BeginInvoke(new MethodInvoker(delegate
+                {
+                    Close();
+                }));
+            }
         }
 
         private void Cleanup(object sender, FormClosingEventArgs e)

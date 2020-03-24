@@ -22,6 +22,8 @@ namespace SoundMachine
             numSoundsBox.Value = Config._currentConfig.MaxSounds;
             ChangedMaxSounds = false;
             inputCheckBox.Checked = Config._currentConfig.InputPassthroughEnabled;
+            inputChannelsBox.SelectedIndex = Config._currentConfig.InputChannels - 1;
+            inputSamplerateBox.SelectedIndex = inputSamplerateBox.FindStringExact(Config._currentConfig.InputSampleRate.ToString());
         }
 
         //Button event to load output devices
@@ -60,10 +62,32 @@ namespace SoundMachine
 
         private void inputCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if(inputCheckBox.Checked == true)
+            if (inputCheckBox.Checked == true)
+            {
                 Form1._currentForm.ToggleInputDevices(true);
+            }
             else
+            {
                 Form1._currentForm.ToggleInputDevices(false);
+            }
+        }
+
+        private void inputChannelsBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (Config._currentConfig.InputChannels != inputChannelsBox.SelectedIndex + 1)
+            {
+                Config._currentConfig.InputChannels = inputChannelsBox.SelectedIndex + 1;
+                SoundSystem.resetListener();
+            }
+        }
+
+        private void inputSamplerateBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (Config._currentConfig.InputSampleRate.ToString() != inputSamplerateBox.Items[inputSamplerateBox.SelectedIndex].ToString())
+            {
+                Config._currentConfig.InputSampleRate = Convert.ToInt32(inputSamplerateBox.Items[inputSamplerateBox.SelectedIndex]);
+                SoundSystem.resetListener();
+            }
         }
     }
 }

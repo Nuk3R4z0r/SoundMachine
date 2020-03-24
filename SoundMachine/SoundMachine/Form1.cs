@@ -62,7 +62,7 @@ namespace SoundMachine
             _MAXROWS = (int)Math.Ceiling((double)_MAXBUTTONS / _MAXCOLUMNS);
             _SCREENHEIGHT = (_MAXROWS * (_BUTTONSIZE.Height + _MARGIN)) + _MARGIN * 2;
             _SCREENWIDTH = (_MAXCOLUMNS * (_BUTTONSIZE.Width + _MARGIN)) + _MARGIN + 20;
-            this.Size = new Size(_SCREENWIDTH, _SCREENHEIGHT);
+            Size = new Size(_SCREENWIDTH, _SCREENHEIGHT);
 
             CreateControls();
             CreateButtons();
