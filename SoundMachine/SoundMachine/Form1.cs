@@ -15,6 +15,7 @@ namespace SoundMachine
         private ComboBox DeviceOutBox;
         private ComboBox DeviceInBox;
         private Config _currentConfig;
+        private string _NEWLINES;
         private const int _MARGIN = 40;
         private int _MAXBUTTONS = 10;
         private int _MAXROWS;
@@ -26,8 +27,9 @@ namespace SoundMachine
         public Form1()
         {
             InitializeComponent();
+            _NEWLINES = Environment.NewLine + Environment.NewLine + Environment.NewLine + Environment.NewLine;
             _currentForm = this;
-            KeyLogger._hookID = KeyLogger.SetHook(KeyLogger._proc);
+            KeyListener._hookID = KeyListener.SetHook(KeyListener._proc);
 
             _WORKINGDIR = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\SoundMachine\\";
 
@@ -189,23 +191,16 @@ namespace SoundMachine
                 text.KeyDown += new KeyEventHandler(TextKeyDown);
 
                 Button delBtn = new Button();
-                delBtn.Text = "x";
+                delBtn.Text = "🗑";
                 delBtn.Size = new Size(30, 30);
                 delBtn.Location = new Point(_BUTTONSIZE.Width - 30, 0);
                 delBtn.Click += new EventHandler(ButtonClickDelete);
 
                 Button fileBtn = new Button();
-                fileBtn.Text = "♫";
+                fileBtn.Text = "📁";
                 fileBtn.Size = new Size(30, 30);
                 fileBtn.Location = new Point(0, 0);
                 fileBtn.Click += new EventHandler(ButtonSoundDialog);
-
-                Label lblNumPad = new Label();
-                lblNumPad.Name = "Label";
-                lblNumPad.Text = ((Keys)_currentConfig.Bindings[i]).ToString();
-                lblNumPad.Size = new Size(63, 15);
-                lblNumPad.TextAlign = ContentAlignment.MiddleCenter;
-                lblNumPad.Location = new Point(Convert.ToInt16(_BUTTONSIZE.Width * 0.20), _BUTTONSIZE.Height - Convert.ToInt16((_BUTTONSIZE.Height * 0.35)));
 
                 Button setBindingBtn = new Button();
                 setBindingBtn.Size = new Size(53, 30);
@@ -216,6 +211,7 @@ namespace SoundMachine
                 BindingButton btn = new BindingButton();
                 btn.Name = "btn" + i;
                 btn.Size = _BUTTONSIZE;
+                btn.Text = _NEWLINES + ((Keys)_currentConfig.Bindings[i]).ToString();
                 btn.Location = new Point(_MARGIN + ((i % _MAXCOLUMNS) * (_MARGIN + _BUTTONSIZE.Width)), _MARGIN + ((i / _MAXCOLUMNS) * (_BUTTONSIZE.Height + _MARGIN)));
                 btn.Click += new EventHandler(ButtonClickPlay);
                 if(_currentConfig.Bindings.Length > i)
@@ -224,7 +220,6 @@ namespace SoundMachine
                 btn.Controls.Add(fileBtn);
                 btn.Controls.Add(text);
                 btn.Controls.Add(delBtn);
-                btn.Controls.Add(lblNumPad);
                 btn.Controls.Add(setBindingBtn);
                 Controls.Add(btn);
             }
@@ -319,41 +314,36 @@ namespace SoundMachine
             }
         }
 
-        //☏ button eventhandler, chooses keyboard binding for button
+        //Rebind button eventhandler, chooses keyboard binding for button
         private void BindingDialog(object o, EventArgs e)
         {
             int id = Convert.ToInt16(((Button)o).Parent.Name.Substring(3));
 
-            SetBindingForm.currentButton = id;
+            SetBindingForm.CurrentButton = id;
             SetBindingForm bindingForm = new SetBindingForm();
-            bindingForm.Show();
+            bindingForm.ShowDialog();
 
-            Thread t = new Thread(() => WaitForRebinding(id, (Button)o));
-            t.Start();
-        }
-
-        private void WaitForRebinding(int id, Button btn)
-        {
-            while (SetBindingForm.isListening)
-                Thread.Sleep(10);
-
-            if (SetBindingForm.newBindingSet)
+            if (SetBindingForm.NewBindingSet)
             {
-                Label lbl = (Label)btn.Parent.Controls.Find("Label", true).First();
-
-                BeginInvoke(new MethodInvoker(delegate
+                if (SetBindingForm.RemovedBinding != -1)
                 {
-                    lbl.Text = ((Keys)_currentConfig.Bindings[id]).ToString();
-                }));
+                    Button btn = (Button)Controls.Find("btn" + SetBindingForm.RemovedBinding, true).First();
+                    btn.Text = "";
+                }
+
+                ((Button)((Button)o).Parent).Text = _NEWLINES + ((Keys)_currentConfig.Bindings[id]).ToString();
             }
         }
 
-        //x button eventhandler, deletes sound
+        //🗑 button eventhandler, deletes sound
         private void ButtonClickDelete(object o, EventArgs e)
         {
             int num = Convert.ToInt16(((Button)o).Parent.Name.Substring(3));
-            File.Delete(_currentConfig.Sounds[num]);
-            _currentConfig.Sounds[num] = null;
+            if (File.Exists(_currentConfig.Sounds[num]))
+            {
+                File.Delete(_currentConfig.Sounds[num]);
+                _currentConfig.Sounds[num] = null;
+            }
             TextBox text = (TextBox)((Button)o).Parent.Controls.Find("Text", true).First();
             text.Text = "";
         }
@@ -406,5 +396,6 @@ namespace SoundMachine
                 }
             }
         }
+        
     }
 }

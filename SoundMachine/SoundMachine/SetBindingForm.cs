@@ -13,39 +13,25 @@ namespace SoundMachine
 {
     public partial class SetBindingForm : Form
     {
-        public static int currentButton = 0;
-        public static bool isListening;
-        public static bool newBindingSet;
+        public static int CurrentButton = 0;
+        public static int RemovedBinding;
+        public static bool NewBindingSet;
+        public static SetBindingForm _currentForm;
+
 
         public SetBindingForm()
         {
             InitializeComponent();
-            isListening = true;
-            KeyLogger.changeBinding = true;
-            newBindingSet = false;
-            this.FormClosing += new FormClosingEventHandler(Cleanup);
-            Thread t = new Thread(WaitForExit);
-            t.Start();
-        }
-
-        private void WaitForExit()
-        {
-            while (isListening)
-                Thread.Sleep(10);
-
-            if(!IsDisposed)
-                {
-                BeginInvoke(new MethodInvoker(delegate
-                {
-                    Close();
-                }));
-            }
+            RemovedBinding = -1;
+            KeyListener.changeBinding = true;
+            NewBindingSet = false;
+            FormClosing += new FormClosingEventHandler(Cleanup);
+            _currentForm = this;
         }
 
         private void Cleanup(object sender, FormClosingEventArgs e)
         {
-            KeyLogger.changeBinding = false;
-            isListening = false;
+            KeyListener.changeBinding = false;
         }
     }
 }

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 namespace SoundMachine
 {
     //Inspired by https://null-byte.wonderhowto.com/how-to/create-simple-hidden-console-keylogger-c-sharp-0132757/
-    class KeyLogger
+    class KeyListener
     {
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
@@ -54,9 +54,19 @@ namespace SoundMachine
 
                 if (changeBinding)
                 {
-                    Config._currentConfig.Bindings[SetBindingForm.currentButton] = vkCode; //Set new binding
-                    SetBindingForm.isListening = false;
-                    SetBindingForm.newBindingSet = true;
+                    for (int i = 0; i < Config._currentConfig.Bindings.Length; i++)
+                    {
+                        int tempCode = Config._currentConfig.Bindings[i];
+                        if (tempCode == vkCode)
+                        {
+                            Config._currentConfig.Bindings[i] = 0;
+                            SetBindingForm.RemovedBinding = i;
+                            break;
+                        }
+                    }
+                    Config._currentConfig.Bindings[SetBindingForm.CurrentButton] = vkCode; //Set new binding
+                    SetBindingForm.NewBindingSet = true;
+                    SetBindingForm._currentForm.Close();
                 }
                 else
                 {

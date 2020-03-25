@@ -48,7 +48,9 @@
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "SetBindingForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Setting binding...";
+            this.TopMost = true;
             this.ResumeLayout(false);
             this.PerformLayout();
 
