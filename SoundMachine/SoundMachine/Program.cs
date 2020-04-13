@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.Win32;
 using System.Windows.Forms;
 
 namespace SoundMachine
@@ -16,6 +14,12 @@ namespace SoundMachine
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            RegistryKey WorkingDirectory = Registry.CurrentUser.CreateSubKey("SoundMachine");
+            if (WorkingDirectory.GetValue("WorkingDirectory") == null || WorkingDirectory.GetValue("WorkingDirectory").ToString() == "")
+                WorkingDirectory.SetValue("WorkingDirectory", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\SoundMachine\\");
+
+            Config.WorkingDir = WorkingDirectory.GetValue("WorkingDirectory").ToString();
+            Config.LoadConfig(10);
             Application.Run(new Form1());
         }
     }

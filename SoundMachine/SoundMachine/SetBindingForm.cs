@@ -1,23 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Threading;
+﻿using System.Windows.Forms;
 
 namespace SoundMachine
 {
     public partial class SetBindingForm : Form
     {
-        public static int CurrentButton = 0;
-        public static int RemovedBinding;
-        public static bool NewBindingSet;
+        public int CurrentButton = 0;
+        public int RemovedBinding;
+        public bool NewBindingSet;
         public static SetBindingForm _currentForm;
-
+        public KeyListener.KeyBinding BindingType;
 
         public SetBindingForm()
         {

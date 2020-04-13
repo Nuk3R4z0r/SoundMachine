@@ -5,12 +5,25 @@ using NAudio;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
-using NAudio.CoreAudioApi;
 
 namespace SoundMachine
 {
-    class SoundSystem
+    public class SoundSystem
     {
+        public enum SoundMode
+        {
+            Stack,
+            Interrupt,
+            StartStop,
+            Loop
+        }
+        private enum SoundState
+        {
+            Null,
+            Started,
+            Stopped
+        }
+
         private static WasapiLoopbackCapture _waveSource;
         private static WaveFileWriter _waveFile;
         private static bool _readyForRecording = true;
@@ -19,22 +32,51 @@ namespace SoundMachine
         //Lists so that mulitple sounds can be played on the same time
         private static List<Guid> OutputGuids;
         private static List<WaveFileReader> readers = new List<WaveFileReader>();
-        private static List<WaveOutEvent> players = new List<WaveOutEvent>();
+        private static List<WaveOutModEvent> players = new List<WaveOutModEvent>();
+        private static WaveFileReader[] stoppableReaders;
+        private static WaveOutModEvent[] stoppablePlayers;
+        private static SoundState[] stoppableState;
         private static WaveInEvent continuousWi;
         private static DirectSoundOut continuousWo;
         private static BufferedWaveProvider provider;
-        private static WaveMixerStream32 mixer;
+        public static bool InputDisabled;
 
-        public static void PlaySoundToDefaultOutput(string fi)
+        public static void InitializeStoppables()
         {
-            WaveOutEvent listenWo = new WaveOutEvent();
+            stoppableReaders = new WaveFileReader[Config._currentConfig.MaxSounds * 2];
+            stoppablePlayers = new WaveOutModEvent[Config._currentConfig.MaxSounds * 2];
+            stoppableState = new SoundState[Config._currentConfig.MaxSounds];
+        }
+
+        private static void AddResourcesToPool(int number, WaveFileReader reader, WaveOutModEvent player, bool isPlayback)
+        {
+            if (number != -1)
+            {
+                player.Stoppable = true;
+                    
+                stoppableState[number] = SoundState.Started;
+                if (isPlayback)
+                    number += Config._currentConfig.MaxSounds;
+
+                stoppablePlayers[number] = player;
+                stoppableReaders[number] = reader;
+            }
+            else
+            {
+                readers.Add(reader);
+                players.Add(player);//To find the resources again
+            }
+        }
+
+        public static void PlaySoundToDefaultOutput(int number, string fi)
+        {
+            WaveOutModEvent listenWo = new WaveOutModEvent();
             listenWo.DeviceNumber = -1;
             listenWo.PlaybackStopped += new EventHandler<StoppedEventArgs>(PlayBackStopped);
             listenWo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
-            players.Add(listenWo);
 
             WaveFileReader reader = new WaveFileReader(fi);
-            readers.Add(reader);
+            AddResourcesToPool(number, reader, listenWo, true);
 
             listenWo.Init(reader);
             listenWo.Play();
@@ -45,47 +87,108 @@ namespace SoundMachine
         {
             if (number == -1)
                 return false;
-
-            string fi = Config._currentConfig.Sounds[number]; //gets location+filename of sound from config determined by numpad number 
-            
-
-            if (fi != null && fi != "")
+ 
+            switch(Config._currentConfig.InputMode)
             {
-                WaveOutEvent wo = new WaveOutEvent();
-                wo.DeviceNumber = Config._currentConfig.CurrentOutputDevice;
-                wo.PlaybackStopped += new EventHandler<StoppedEventArgs>(PlayBackStopped); //To cleanup resources when done
-                players.Add(wo); //To find the resources again
-
-                string ext = fi.Substring(fi.LastIndexOf(".")).ToLower();
-
-                if (ext == ".mp3" || ext == ".wav")
-                {
-                    WaveFileReader reader = new WaveFileReader(fi);
-                    readers.Add(reader);
-                    
-                    try
-                    {
-                        wo.Init(reader);
-                        wo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
-                        wo.Play();
-
-                        if (Config._currentConfig.SoundPlaybackEnabled)
-                        {
-                            PlaySoundToDefaultOutput(fi);
-                        }
-                    }
-                    catch (MmException e)
-                    {
-                        MessageBox.Show("Error!\n" + e.Message + "\n\nCan't play audio:\nSelected audio device is already in use!");
-                    }
-                }
+                case SoundMode.Stack:
+                    StackSound(number);
+                    break;
+                case SoundMode.Interrupt:
+                    KillAllSounds();
+                    StackSound(number);
+                    break;
+                case SoundMode.StartStop:
+                    StartStopSound(number);
+                    break;
+                case SoundMode.Loop:
+                    StartStopSound(number);
+                    break;
             }
 
             return true;
         }
 
+        private static void StartStopSound(int number)
+        {
+            if (stoppableState[number] == SoundState.Started)
+            {
+                if (Config._currentConfig.SoundPlaybackEnabled)
+                    if(stoppablePlayers[number + Config._currentConfig.MaxSounds] != null)
+                        stoppablePlayers[number + Config._currentConfig.MaxSounds].Pause();
+                stoppablePlayers[number].Pause();
+                stoppableState[number] = SoundState.Stopped;
+            }
+            else if(stoppableState[number] == SoundState.Stopped)
+            {
+                stoppablePlayers[number].Volume = Config._currentConfig.CurrentVolume / 10.0f;
+
+                if (Config._currentConfig.SoundPlaybackEnabled)
+                    stoppablePlayers[number + Config._currentConfig.MaxSounds].Play();
+                stoppablePlayers[number].Play();
+                stoppableState[number] = SoundState.Started;
+            }
+            else
+            {
+                StackSound(number);
+            }
+        }
+        
+        private static void StackSound(int number)
+        {
+            string fi = SoundProfile.CurrentSoundProfile.Sounds[number]; //gets location+filename of sound from config determined by numpad number
+            if (fi == null)
+                return;
+
+            WaveOutModEvent wo = new WaveOutModEvent();
+            wo.DeviceNumber = Config._currentConfig.CurrentOutputDevice;
+                wo.PlaybackStopped += new EventHandler<StoppedEventArgs>(PlayBackStopped); //To cleanup resources when done
+
+            string ext = fi.Substring(fi.LastIndexOf(".")).ToLower();
+
+            if (ext == ".mp3" || ext == ".wav")
+            {
+                WaveFileReader reader;
+                try
+                {
+                    reader = new WaveFileReader(fi);
+                }
+                catch(Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                    return;
+                }
+
+                try
+                {
+                    wo.Init(reader);
+                }
+                catch (MmException e)
+                {
+                    MessageBox.Show("Error!\n" + e.Message + "\n\nCan't play audio:\nSelected audio device is already in use!");
+                    return;
+                }
+
+
+                wo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
+                wo.Play();
+
+                if (Config._currentConfig.InputMode == SoundMode.StartStop || Config._currentConfig.InputMode == SoundMode.Loop)
+                {
+                    if (Config._currentConfig.SoundPlaybackEnabled)
+                        PlaySoundToDefaultOutput(number, fi);
+                    AddResourcesToPool(number, reader, wo, false);
+                }
+                else
+                {
+                    if (Config._currentConfig.SoundPlaybackEnabled)
+                        PlaySoundToDefaultOutput(-1, fi);
+                    AddResourcesToPool(-1, reader, wo, false);
+                }
+            }
+        }
+
         //For the dropdown menu and NAudio
-        public static string[] GetOutputDevices()
+        public static string[] PopulateOutputDevices()
         {
             OutputGuids = new List<Guid>();
             List<string> value = new List<string>();
@@ -103,7 +206,7 @@ namespace SoundMachine
         }
 
         //For the dropdown menu and NAudio
-        public static string[] GetInputDevices()
+        public static string[] PopulateInputDevices()
         {
             List<string> value = new List<string>();
             for (int deviceId = 0; deviceId < WaveIn.DeviceCount; deviceId++)
@@ -128,23 +231,17 @@ namespace SoundMachine
                 _waveSource.DataAvailable += new EventHandler<WaveInEventArgs>(waveSource_DataAvailable);
                 _waveSource.RecordingStopped += new EventHandler<StoppedEventArgs>(waveSource_RecordingStopped);
 
-                string saveFile = Form1._currentForm._WORKINGDIR + "Sounds\\" + "Macro" + number + ".wav";
+                string saveFile = Config.WorkingDir + SoundProfile.CurrentSoundProfile.ProfileName + "\\Sounds\\" + "Macro" + number + ".wav";
                 //checks if file exists
-                if (Config._currentConfig.Sounds[number] != null)
-                {
-                    if (File.Exists(Config._currentConfig.Sounds[number]))
-                    {
-                        File.Delete(Config._currentConfig.Sounds[number]);
-                    }
-                }
                 if (File.Exists(saveFile))
                 {
                     File.Delete(saveFile);
                 }
 
                 //Saves to config
-                Config._currentConfig.Sounds[number] = saveFile;
-                Config._currentConfig.Texts[number] = "Macro" + number;
+                SoundProfile.CurrentSoundProfile.Sounds[number] = saveFile;
+                SoundProfile.CurrentSoundProfile.Texts[number] = "Macro" + number;
+                SoundProfile.CurrentSoundProfile.SaveSoundProfile();
 
                 //Starts recording which starts DataAvailable event
                 _waveFile = new WaveFileWriter(saveFile, _waveSource.WaveFormat);
@@ -170,14 +267,41 @@ namespace SoundMachine
         //Event, cleanup for playback
         static void PlayBackStopped(object sender, StoppedEventArgs e)
         {
-            WaveOutEvent wo = (WaveOutEvent)sender;
-            int index = players.FindIndex(a => a == wo);
-            players[index].Dispose();
-            players[index] = null;
-            players.RemoveAt(index);
-            readers[index].Dispose();
-            readers[index] = null;
-            readers.RemoveAt(index);
+            WaveOutModEvent wo = (WaveOutModEvent)sender;
+            if (wo.Stoppable)
+            {
+                for(int i = 0; i < stoppablePlayers.Length; i++)
+                {
+                    if (stoppablePlayers[i] == wo)
+                    {
+                        if (Config._currentConfig.InputMode == SoundMode.Loop)
+                        {
+                            stoppableReaders[i].CurrentTime = new TimeSpan(0, 0, 0);
+                            stoppablePlayers[i].Play();
+                        }
+                        else
+                        {
+                            stoppablePlayers[i].Dispose();
+                            stoppablePlayers[i] = null;
+                            stoppableReaders[i].Dispose();
+                            stoppableReaders[i] = null;
+                            if (i < Config._currentConfig.MaxSounds)
+                                stoppableState[i] = SoundState.Null;
+                        }
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                int index = players.FindIndex(a => a == wo);
+                players[index].Dispose();
+                players[index] = null;
+                players.RemoveAt(index);
+                readers[index].Dispose();
+                readers[index] = null;
+                readers.RemoveAt(index);
+            }
         }
 
         //Event, writes data from buffer
@@ -240,7 +364,47 @@ namespace SoundMachine
         //Event, writes data from buffer
         private static void waveInput_DataAvailable(object sender, WaveInEventArgs e)
         {
-            provider.AddSamples(e.Buffer, 0, e.Buffer.Length);
+            if(!InputDisabled)
+                provider.AddSamples(e.Buffer, 0, e.Buffer.Length);
+        }
+         
+        public static void SwitchSoundMode()
+        {
+            if (Config._currentConfig.InputMode == SoundMode.StartStop)
+                Config._currentConfig.InputMode = SoundMode.Stack;
+            else if (Config._currentConfig.InputMode == SoundMode.Stack)
+                Config._currentConfig.InputMode = SoundMode.Interrupt;
+            else if(Config._currentConfig.InputMode == SoundMode.Interrupt)
+                Config._currentConfig.InputMode = SoundMode.Loop;
+            else
+                Config._currentConfig.InputMode = SoundMode.StartStop;
+            Overlay._currentOverlay.UpdateBehaviorText();
+        }
+
+        public static void KillAllSounds()
+        {
+            if (Config._currentConfig.InputMode == SoundMode.StartStop)
+            {
+                for (int i = 0; i < stoppablePlayers.Length; i++)
+                {
+                    if (stoppablePlayers[i] != null)
+                    {
+                        stoppablePlayers[i].Stop();
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < players.Count; i++)
+                {
+                    if (players[i] != null)
+                    {
+                        players[i].Stop();
+                    }
+                }
+            }
+
+            InitializeStoppables();
         }
 
         public static void resetListener()

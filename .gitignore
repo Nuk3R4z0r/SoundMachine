@@ -64,3 +64,7 @@ SoundMachine/SoundMachine/obj/Release/SoundMachine.SettingsForm.resources
 SoundMachine/SoundMachine/obj/Release/SoundMachine.csproj.CopyComplete
 SoundMachine/SoundMachine/bin/Release/SoundMachine.exe.config
 SoundMachine/SoundMachine/obj/Release/SoundMachine.csproj.FileListAbsolute.txt
+SoundMachine/SoundMachine/bin/Release/SoundMachine.zip
+SoundMachine/.vs/SoundMachine/v16/.suo
+SoundMachine/SoundMachine/bin/Release/SoundMachine.zip
+*.resources

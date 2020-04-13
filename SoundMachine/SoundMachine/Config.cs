@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows.Forms;
 
 namespace SoundMachine
@@ -6,101 +9,345 @@ namespace SoundMachine
     [Serializable]
     class Config
     {
+        public static string WorkingDir;
         public static Config _currentConfig;
-        public int MaxSounds { get; set; }
-        public string[] Sounds { get; set; }
-        public string[] Texts { get; set; }
-        public int[] Bindings { get; set; }
-        public int CurrentOutputDevice { get; set; }
-        public int CurrentInputDevice { get; set; }
-        public int SoundPlaybackDevice { get; set; }
-        public int CurrentVolume { get; set; }
-        public bool InputPassthroughEnabled { get; set; }
-        public bool InputPlaybackEnabled { get; set; }
-        public int InputChannels { get; set; }
-        public int InputSampleRate { get; set; }
-        public bool SoundPlaybackEnabled { get; set; }
-        public bool InterruptKeys { get; set; }
+        
+        private int _maxSounds;
+        public int MaxSounds { 
+            get { return _maxSounds; } 
+            set { if (_maxSounds != value)
+                {
+                    _maxSounds = value;
+                    SaveConfig();
+                }
+            } 
+        }
 
+        private List<string> _profiles;
+        public List<string> Profiles { 
+            get { return _profiles; }
+            set
+            {
+                if (_profiles != value)
+                {
+                    _profiles = value;
+                }
+            }
+        }
+
+        private int _currentProfile;
+        public int CurrentProfile { 
+            get { return _currentProfile; }
+            set
+            {
+                if (_currentProfile != value)
+                {
+                    if (value < Profiles.Count && value > 0)
+                        _currentProfile = value;
+                    else
+                        _currentProfile = 0;
+                    SoundProfile.LoadSoundProfile(Profiles[_currentProfile]);
+                    SaveConfig();
+                }
+            }
+        }
+
+        private int _currentOutputDevice;
+        public int CurrentOutputDevice { 
+            get { return _currentOutputDevice; }
+            set
+            {
+                if (_currentOutputDevice != value)
+                {
+                    _currentOutputDevice = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private int _currentInputDevice;
+        public int CurrentInputDevice { 
+            get { return _currentInputDevice; }
+            set
+            {
+                if (_currentInputDevice != value)
+                {
+                    _currentInputDevice = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private int _soundPlaybackDevice;
+        public int SoundPlaybackDevice {
+            get { return _soundPlaybackDevice; }
+            set
+            {
+                if (_soundPlaybackDevice != value)
+                {
+                    _soundPlaybackDevice = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private int _currentVolume;
+        public int CurrentVolume { 
+            get { return _currentVolume; }
+            set
+            {
+                if (_currentVolume != value)
+                {
+                    _currentVolume = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private bool _inputPassthroughEnabled;
+        public bool InputPassthroughEnabled { 
+            get { return _inputPassthroughEnabled; }
+            set
+            {
+                if (_inputPassthroughEnabled != value)
+                {
+                    _inputPassthroughEnabled = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private bool _inputPlaybackEnabled;
+        public bool InputPlaybackEnabled { 
+            get { return _inputPlaybackEnabled; }
+            set
+            {
+                if (_inputPlaybackEnabled != value)
+                {
+                    _inputPlaybackEnabled = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private int _inputChannels;
+        public int InputChannels { 
+            get { return _inputChannels; }
+            set
+            {
+                if (_inputChannels != value)
+                {
+                    _inputChannels = value;
+                    SaveConfig();
+                }
+            }
+        }
+        
+        private int _inputSampleRate;
+        public int InputSampleRate { 
+            get { return _inputSampleRate; }
+            set
+            {
+                if (_inputSampleRate != value)
+                {
+                    _inputSampleRate = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private bool _soundPlaybackEnabled;
+        public bool SoundPlaybackEnabled { 
+            get { return _soundPlaybackEnabled; }
+            set
+            {
+                if (_soundPlaybackEnabled != value)
+                {
+                    _soundPlaybackEnabled = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private bool _muteInputWithSoundSystem;
+        public bool MuteInputWithSoundSystem
+        {
+            get { return _muteInputWithSoundSystem; }
+            set
+            {
+                if (_muteInputWithSoundSystem != value)
+                {
+                    _muteInputWithSoundSystem = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private bool _interruptKeys;
+        public bool InterruptKeys { 
+            get { return _interruptKeys; }
+            set
+            {
+                if (_interruptKeys != value)
+                {
+                    _interruptKeys = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private int _toggleSystemBinding;
+        public int ToggleSystemBinding { 
+            get { return _toggleSystemBinding; }
+            set
+            {
+                if (_toggleSystemBinding != value)
+                {
+                    _toggleSystemBinding = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private int _toggleModeBinding;
+        public int ToggleModeBinding { 
+            get { return _toggleModeBinding; }
+            set
+            {
+                if (_toggleModeBinding != value)
+                {
+                    _toggleModeBinding = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private int _toggleOverlayBinding;
+        public int ToggleOverlayBinding
+        {
+            get { return _toggleOverlayBinding; }
+            set
+            {
+                if (_toggleOverlayBinding != value)
+                {
+                    _toggleOverlayBinding = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private int _toggleProfileBinding;
+        public int ToggleProfileBinding
+        {
+            get { return _toggleProfileBinding; }
+            set
+            {
+                if (_toggleProfileBinding != value)
+                {
+                    _toggleProfileBinding = value;
+                    SaveConfig();
+                }
+            }
+        }
+
+        private SoundSystem.SoundMode _inputMode;
+        public SoundSystem.SoundMode InputMode { 
+            get { return _inputMode; }
+            set
+            {
+                if (_inputMode != value)
+                {
+                    _inputMode = value;
+                    SaveConfig();
+                }
+            }
+        }
 
         public Config(int maxButtons)
         {
-            MaxSounds = maxButtons;
-            Sounds = new string[MaxSounds];
-            Texts = new string[MaxSounds];
-            Bindings = new int[MaxSounds];
-            AddDefaultBindings();
-
-            CurrentOutputDevice = 0;
-            CurrentInputDevice = 0;
-            SoundPlaybackDevice = 0;
-            CurrentVolume = 0;
-            InputPassthroughEnabled = true;
-            InputPlaybackEnabled = true;
-            InputChannels = 1;
-            InputSampleRate = 44100;
-            SoundPlaybackEnabled = true;
-            InterruptKeys = false;
-            _currentConfig = this;
+            _maxSounds = maxButtons;
+            _profiles = new List<string>();
+            _currentOutputDevice = 0;
+            _currentInputDevice = 0;
+            _soundPlaybackDevice = 0;
+            _currentVolume = 10;
+            _inputPassthroughEnabled = true;
+            _inputPlaybackEnabled = true;
+            _inputChannels = 1;
+            _inputSampleRate = 44100;
+            _soundPlaybackEnabled = true;
+            _interruptKeys = false;
+            _inputMode = SoundSystem.SoundMode.Interrupt;
+            _currentProfile = 0;
+            _profiles.Add("Profile0");
         }
 
         public Config(Config blueprint)
         {
-            MaxSounds = blueprint.MaxSounds < 10 ? 10 : blueprint.MaxSounds;
-
-            Sounds = blueprint.Sounds ?? new string[MaxSounds];
-            Texts = blueprint.Texts ?? new string[MaxSounds];
-            if (blueprint.Bindings == null)
-            {
-                Bindings = new int[MaxSounds];
-                AddDefaultBindings();
-            }
-            else
-                Bindings = blueprint.Bindings;
-
-            if(MaxSounds > Sounds.Length)
-            {
-                string[] tempSoundsArray = new string[MaxSounds];
-                string[] tempTextsArray = new string[MaxSounds];
-                int[] tempBindingsArray = new int[MaxSounds];
-
-                for(int i = 0; i < Sounds.Length; i++)
-                {
-                    tempSoundsArray[i] = Sounds[i];
-                    tempTextsArray[i] = Texts[i];
-                    tempBindingsArray[i] = Bindings[i];
-                }
-
-                Sounds = tempSoundsArray;
-                Texts = tempTextsArray;
-                Bindings = tempBindingsArray;
-            }
-
-            CurrentOutputDevice = blueprint.CurrentOutputDevice;
-            CurrentInputDevice = blueprint.CurrentInputDevice;
-            SoundPlaybackDevice = blueprint.SoundPlaybackDevice;
-            CurrentVolume = blueprint.CurrentVolume;
-            InputPassthroughEnabled = blueprint.InputPassthroughEnabled;
-            InputPlaybackEnabled = blueprint.InputPlaybackEnabled;
-            SoundPlaybackEnabled = blueprint.SoundPlaybackEnabled;
-            InterruptKeys = blueprint.InterruptKeys;
-            InputChannels = blueprint.InputChannels == 0 ? 1 : blueprint.InputChannels;
-            InputSampleRate = blueprint.InputSampleRate == 0 ? 44100 : blueprint.InputSampleRate;
-            _currentConfig = this;
+            _maxSounds = blueprint.MaxSounds < 10 ? 10 : blueprint.MaxSounds;
+            _currentOutputDevice = blueprint.CurrentOutputDevice;
+            _currentInputDevice = blueprint.CurrentInputDevice;
+            _soundPlaybackDevice = blueprint.SoundPlaybackDevice;
+            _currentVolume = blueprint.CurrentVolume;
+            _inputPassthroughEnabled = blueprint.InputPassthroughEnabled;
+            _inputPlaybackEnabled = blueprint.InputPlaybackEnabled;
+            _soundPlaybackEnabled = blueprint.SoundPlaybackEnabled;
+            _interruptKeys = blueprint.InterruptKeys;
+            _inputChannels = blueprint.InputChannels == 0 ? 1 : blueprint.InputChannels;
+            _inputSampleRate = blueprint.InputSampleRate == 0 ? 44100 : blueprint.InputSampleRate;
+            _muteInputWithSoundSystem = blueprint.MuteInputWithSoundSystem;
+            _toggleSystemBinding = blueprint.ToggleSystemBinding;
+            _toggleModeBinding = blueprint.ToggleModeBinding;
+            _toggleProfileBinding = blueprint.ToggleProfileBinding;
+            _toggleOverlayBinding = blueprint.ToggleOverlayBinding;
+            _inputMode = blueprint.InputMode;
+            _profiles = blueprint.Profiles == null ? new List<string>() : blueprint.Profiles;
+            if (_profiles.Count == 0)
+                _profiles.Add("Profile0");
+            _currentProfile = blueprint.CurrentProfile;
         }
 
-        private void AddDefaultBindings()
+        public void SaveConfig()
         {
-            Bindings[0] = (int)Keys.NumPad0;
-            Bindings[1] = (int)Keys.NumPad1;
-            Bindings[2] = (int)Keys.NumPad2;
-            Bindings[3] = (int)Keys.NumPad3;
-            Bindings[4] = (int)Keys.NumPad4;
-            Bindings[5] = (int)Keys.NumPad5;
-            Bindings[6] = (int)Keys.NumPad6;
-            Bindings[7] = (int)Keys.NumPad7;
-            Bindings[8] = (int)Keys.NumPad8;
-            Bindings[9] = (int)Keys.NumPad9;
+            BinaryFormatter bf = new BinaryFormatter();
+
+            using (StreamWriter sw = new StreamWriter(WorkingDir + "Config.cfg"))
+            {
+                bf.Serialize(sw.BaseStream, this);
+                sw.Close();
+            }
+        }
+
+        public static Config LoadConfig(int MaxButtons)
+        {
+            if (!Directory.Exists(WorkingDir))
+            {
+                Directory.CreateDirectory(WorkingDir);
+            }
+
+            if (File.Exists(WorkingDir + "Config.cfg"))
+            {
+                try
+                {
+                    using (StreamReader sr = new StreamReader(WorkingDir + "Config.cfg"))
+                    {
+                        BinaryFormatter bf = new BinaryFormatter();
+                        _currentConfig = new Config((Config)bf.Deserialize(sr.BaseStream));
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message);
+                    File.Delete(WorkingDir + "Config.cfg");
+                    _currentConfig = new Config(MaxButtons);
+                }
+            }
+            else
+            {
+                _currentConfig = new Config(MaxButtons);
+            }
+
+            return _currentConfig;
         }
     }
 }
