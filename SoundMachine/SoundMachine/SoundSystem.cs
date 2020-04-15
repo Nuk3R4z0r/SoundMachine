@@ -277,6 +277,7 @@ namespace SoundMachine
                         if (Config._currentConfig.InputMode == SoundMode.Loop)
                         {
                             stoppableReaders[i].CurrentTime = new TimeSpan(0, 0, 0);
+                            stoppablePlayers[i].Volume = Config._currentConfig.CurrentVolume / 10.0f;
                             stoppablePlayers[i].Play();
                         }
                         else

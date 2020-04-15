@@ -113,6 +113,7 @@ namespace SoundMachine
             if (!Directory.Exists(Config.WorkingDir + profile + "\\"))
             {
                 Directory.CreateDirectory(Config.WorkingDir + profile + "\\");
+                Directory.CreateDirectory(Config.WorkingDir + profile + "\\Sounds\\");
             }
 
             if (File.Exists(Config.WorkingDir + profile + "\\" + profile + ".profile"))

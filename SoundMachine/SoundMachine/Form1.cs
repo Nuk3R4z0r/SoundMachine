@@ -31,9 +31,10 @@ namespace SoundMachine
             _NEWLINES = Environment.NewLine + Environment.NewLine + Environment.NewLine + Environment.NewLine;
             btnList = new List<BindingButton>();
             _currentForm = this;
-            Overlay overlay = new Overlay();
             KeyListener._hookID = KeyListener.SetHook(KeyListener._proc);
+            KeyListener._listenerEnabled = true;
 
+            Overlay overlay = new Overlay();
             overlay.UpdateBehaviorText();
 
             RenderCanvas();
@@ -45,7 +46,6 @@ namespace SoundMachine
                 t.Start();
             }
 
-            KeyListener._listenerEnabled = true;
             SoundSystem.InitializeStoppables();
         }
 
@@ -234,6 +234,7 @@ namespace SoundMachine
                             File.Delete(newName);
                     }
 
+                    SoundSystem.KillAllSounds();
                     if (!File.Equals(SoundProfile.CurrentSoundProfile.Sounds[macroNumber], newName))
                         File.Move(SoundProfile.CurrentSoundProfile.Sounds[macroNumber], newName); //refactor please, no need to move files that were just recorded
 
