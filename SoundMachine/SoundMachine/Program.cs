@@ -14,13 +14,20 @@ namespace SoundMachine
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            RegistryKey WorkingDirectory = Registry.CurrentUser.CreateSubKey("SoundMachine");
-            if (WorkingDirectory.GetValue("WorkingDirectory") == null || WorkingDirectory.GetValue("WorkingDirectory").ToString() == "")
-                WorkingDirectory.SetValue("WorkingDirectory", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\SoundMachine\\");
+            try
+            {
+                RegistryKey WorkingDirectory = Registry.CurrentUser.CreateSubKey("SoundMachine");
+                if (WorkingDirectory.GetValue("WorkingDirectory") == null || WorkingDirectory.GetValue("WorkingDirectory").ToString() == "")
+                    WorkingDirectory.SetValue("WorkingDirectory", Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\SoundMachine\\");
 
-            Config.WorkingDir = WorkingDirectory.GetValue("WorkingDirectory").ToString();
-            Config.LoadConfig(10);
-            Application.Run(new Form1());
+                Config.WorkingDir = WorkingDirectory.GetValue("WorkingDirectory").ToString();
+                Config.LoadConfig(10);
+                Application.Run(new Form1());
+            }
+            catch(Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
     }
 }

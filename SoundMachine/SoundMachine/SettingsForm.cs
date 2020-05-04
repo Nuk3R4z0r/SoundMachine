@@ -90,7 +90,11 @@ namespace SoundMachine
 
         private void playbackCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            Config._currentConfig.SoundPlaybackEnabled = playbackCheckBox.Checked;
+            if (Config._currentConfig.SoundPlaybackEnabled != playbackCheckBox.Checked)
+            {
+                SoundSystem.KillAllSounds();
+                Config._currentConfig.SoundPlaybackEnabled = playbackCheckBox.Checked;
+            }
         }
 
         private void btnToggleBinding_Click(object sender, EventArgs e)
@@ -176,16 +180,23 @@ namespace SoundMachine
         private void SetOutputDeviceNumber(object o, EventArgs e)
         {
             ComboBox cb = (ComboBox)o;
-            Config._currentConfig.CurrentOutputDevice = cb.SelectedIndex;
-            SoundSystem.resetListener();
+            if (Config._currentConfig.CurrentOutputDevice != cb.SelectedIndex)
+            {
+                Config._currentConfig.CurrentOutputDevice = cb.SelectedIndex;
+                SoundSystem.resetListener();
+                SoundSystem.KillAllSounds();
+            }
         }
 
         //EventHandler for choosing a device in DeviceBox
         private void SetInputDeviceNumber(object o, EventArgs e)
         {
             ComboBox cb = (ComboBox)o;
-            Config._currentConfig.CurrentInputDevice = cb.SelectedIndex;
-            SoundSystem.resetListener();
+            if (Config._currentConfig.CurrentInputDevice != cb.SelectedIndex)
+            {
+                Config._currentConfig.CurrentInputDevice = cb.SelectedIndex;
+                SoundSystem.resetListener();
+            }
         }
 
         private void btnProfileBinding_Click(object sender, EventArgs e)

@@ -50,7 +50,7 @@ namespace SoundMachine
 
         private static void AddResourcesToPool(int number, WaveFileReader reader, WaveOutModEvent player, bool isPlayback)
         {
-            if (number != -1)
+            if (Config._currentConfig.InputMode == SoundMode.StartStop || Config._currentConfig.InputMode == SoundMode.Loop)
             {
                 player.SoundNumber = number;
                 player.Stoppable = true;
@@ -64,6 +64,8 @@ namespace SoundMachine
             }
             else
             {
+                player.SoundIndex = players.Count;
+                player.SoundNumber = number;
                 readers.Add(reader);
                 players.Add(player);//To find the resources again
             }
@@ -173,18 +175,9 @@ namespace SoundMachine
                 wo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
                 wo.Play();
 
-                if (Config._currentConfig.InputMode == SoundMode.StartStop || Config._currentConfig.InputMode == SoundMode.Loop)
-                {
-                    if (Config._currentConfig.SoundPlaybackEnabled)
-                        PlaySoundToDefaultOutput(number, fi);
-                    AddResourcesToPool(number, reader, wo, false);
-                }
-                else
-                {
-                    if (Config._currentConfig.SoundPlaybackEnabled)
-                        PlaySoundToDefaultOutput(-1, fi);
-                    AddResourcesToPool(-1, reader, wo, false);
-                }
+                if (Config._currentConfig.SoundPlaybackEnabled)
+                    PlaySoundToDefaultOutput(number, fi);
+                AddResourcesToPool(number, reader, wo, false);
             }
         }
 
@@ -278,21 +271,22 @@ namespace SoundMachine
                 {
                     if (stoppablePlayers[i] == wo)
                     {
-                        if (Config._currentConfig.InputMode == SoundMode.Loop)
-                        {
-                            stoppableReaders[i].CurrentTime = new TimeSpan(0, 0, 0);
-                            stoppablePlayers[i].Volume = Config._currentConfig.CurrentVolume / 10.0f;
-                            stoppablePlayers[i].Play();
-                        }
-                        else
-                        {
-                            stoppablePlayers[i].Dispose();
-                            stoppablePlayers[i] = null;
-                            stoppableReaders[i].Dispose();
-                            stoppableReaders[i] = null;
-                            if (i < Config._currentConfig.MaxSounds)
-                                stoppableState[i] = SoundState.Null;
-                        }
+                            if (Config._currentConfig.InputMode == SoundMode.Loop)
+                            {
+                                stoppableReaders[i].CurrentTime = new TimeSpan(0, 0, 0);
+                                stoppablePlayers[i].Volume = Config._currentConfig.CurrentVolume / 10.0f;
+                                stoppablePlayers[i].Play();
+                            }
+                            else
+                            {
+                                stoppablePlayers[i].Dispose();
+                                stoppablePlayers[i] = null;
+                                stoppableReaders[i].Close();
+                                stoppableReaders[i].Dispose();
+                                stoppableReaders[i] = null;
+                                if (i < Config._currentConfig.MaxSounds)
+                                    stoppableState[i] = SoundState.Null;
+                            }
                         break;
                     }
                 }
@@ -303,6 +297,7 @@ namespace SoundMachine
                 players[index].Dispose();
                 players[index] = null;
                 players.RemoveAt(index);
+                readers[index].Close();
                 readers[index].Dispose();
                 readers[index] = null;
                 readers.RemoveAt(index);
@@ -388,21 +383,34 @@ namespace SoundMachine
 
         public static void KillSound(int number)
         {
-            if (Config._currentConfig.InputMode == SoundMode.StartStop)
+            if (Config._currentConfig.InputMode == SoundMode.StartStop || Config._currentConfig.InputMode == SoundMode.Loop)
             {
-                foreach (WaveOutModEvent wEvent in stoppablePlayers)
-                    if (wEvent != null && wEvent.SoundNumber == number)
-                        wEvent.Stop();
+                if (stoppablePlayers[number] != null)
+                {
+                    stoppablePlayers[number].Stop();
+                    stoppablePlayers[number].Dispose();
+                    stoppablePlayers[number] = null;
+                    stoppableReaders[number].Close();
+                    stoppableReaders[number].Dispose();
+                    stoppableReaders[number] = null;
+                    stoppableState[number] = SoundState.Null;
+                }
+                if (stoppablePlayers[number + Config._currentConfig.MaxSounds] != null)
+                {
+                    stoppablePlayers[number + Config._currentConfig.MaxSounds].Stop();
+                    stoppablePlayers[number + Config._currentConfig.MaxSounds].Dispose();
+                    stoppablePlayers[number + Config._currentConfig.MaxSounds] = null;
+                    stoppableReaders[number + Config._currentConfig.MaxSounds].Close();
+                    stoppableReaders[number + Config._currentConfig.MaxSounds] = null;
+                }
             }
             else
-                foreach (WaveOutModEvent wEvent in players)
-                    if (wEvent.SoundNumber == number)
-                        wEvent.Stop();
+                KillAllSounds();
         }
 
         public static void KillAllSounds()
         {
-            if (Config._currentConfig.InputMode == SoundMode.StartStop)
+            if (Config._currentConfig.InputMode == SoundMode.StartStop || Config._currentConfig.InputMode == SoundMode.Loop)
             {
                 for (int i = 0; i < stoppablePlayers.Length; i++)
                 {
@@ -417,9 +425,9 @@ namespace SoundMachine
             {
                 for (int i = 0; i < players.Count; i++)
                 {
-                    if (players[i] != null)
+                    if (readers[i] != null)
                     {
-                        players[i].Stop();
+                        readers[i].Close();
                     }
                 }
             }
