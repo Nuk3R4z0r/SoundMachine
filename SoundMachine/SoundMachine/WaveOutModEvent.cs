@@ -10,5 +10,6 @@ namespace SoundMachine
     class WaveOutModEvent : WaveOutEvent
     {
         public bool Stoppable = false;
+        public int SoundNumber = -1;
     }
 }

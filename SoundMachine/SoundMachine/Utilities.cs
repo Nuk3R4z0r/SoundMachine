@@ -12,7 +12,10 @@ namespace SoundMachine
             for(int i = 0; i < SoundProfile.CurrentSoundProfile.Bindings.Length; i++)
             {
                 if (SoundProfile.CurrentSoundProfile.Bindings[i] == vkCode)
+                {
                     id = i;
+                    return id;
+                }
             }
 
             return id;

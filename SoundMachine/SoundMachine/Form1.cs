@@ -234,7 +234,7 @@ namespace SoundMachine
                             File.Delete(newName);
                     }
 
-                    SoundSystem.KillAllSounds();
+                    SoundSystem.KillSound(macroNumber);
                     if (!File.Equals(SoundProfile.CurrentSoundProfile.Sounds[macroNumber], newName))
                         File.Move(SoundProfile.CurrentSoundProfile.Sounds[macroNumber], newName); //refactor please, no need to move files that were just recorded
 

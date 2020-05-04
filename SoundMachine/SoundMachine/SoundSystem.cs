@@ -52,6 +52,7 @@ namespace SoundMachine
         {
             if (number != -1)
             {
+                player.SoundNumber = number;
                 player.Stoppable = true;
                     
                 stoppableState[number] = SoundState.Started;
@@ -222,6 +223,8 @@ namespace SoundMachine
             if (number == -1)
                 return false;
 
+            KillSound(number);
+
             if (_readyForRecording)
             {
                 //we only want one recordingsession at a time
@@ -244,6 +247,7 @@ namespace SoundMachine
                 SoundProfile.CurrentSoundProfile.SaveSoundProfile();
 
                 //Starts recording which starts DataAvailable event
+
                 _waveFile = new WaveFileWriter(saveFile, _waveSource.WaveFormat);
                 _waveSource.StartRecording();
 
@@ -382,6 +386,20 @@ namespace SoundMachine
             Overlay._currentOverlay.UpdateBehaviorText();
         }
 
+        public static void KillSound(int number)
+        {
+            if (Config._currentConfig.InputMode == SoundMode.StartStop)
+            {
+                foreach (WaveOutModEvent wEvent in stoppablePlayers)
+                    if (wEvent != null && wEvent.SoundNumber == number)
+                        wEvent.Stop();
+            }
+            else
+                foreach (WaveOutModEvent wEvent in players)
+                    if (wEvent.SoundNumber == number)
+                        wEvent.Stop();
+        }
+
         public static void KillAllSounds()
         {
             if (Config._currentConfig.InputMode == SoundMode.StartStop)
@@ -393,6 +411,7 @@ namespace SoundMachine
                         stoppablePlayers[i].Stop();
                     }
                 }
+                InitializeStoppables();
             }
             else
             {
@@ -404,8 +423,6 @@ namespace SoundMachine
                     }
                 }
             }
-
-            InitializeStoppables();
         }
 
         public static void resetListener()
