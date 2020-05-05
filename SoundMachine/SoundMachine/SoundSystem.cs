@@ -64,7 +64,6 @@ namespace SoundMachine
             }
             else
             {
-                player.SoundIndex = players.Count;
                 player.SoundNumber = number;
                 readers.Add(reader);
                 players.Add(player);//To find the resources again
@@ -279,13 +278,7 @@ namespace SoundMachine
                             }
                             else
                             {
-                                stoppablePlayers[i].Dispose();
-                                stoppablePlayers[i] = null;
-                                stoppableReaders[i].Close();
-                                stoppableReaders[i].Dispose();
-                                stoppableReaders[i] = null;
-                                if (i < Config._currentConfig.MaxSounds)
-                                    stoppableState[i] = SoundState.Null;
+                                DisposeSound(i);
                             }
                         break;
                     }
@@ -294,13 +287,8 @@ namespace SoundMachine
             else
             {
                 int index = players.FindIndex(a => a == wo);
-                players[index].Dispose();
-                players[index] = null;
-                players.RemoveAt(index);
-                readers[index].Close();
-                readers[index].Dispose();
-                readers[index] = null;
-                readers.RemoveAt(index);
+                if(index != -1)
+                    DisposeSound(index);
             }
         }
 
@@ -387,25 +375,19 @@ namespace SoundMachine
             {
                 if (stoppablePlayers[number] != null)
                 {
-                    stoppablePlayers[number].Stop();
-                    stoppablePlayers[number].Dispose();
-                    stoppablePlayers[number] = null;
-                    stoppableReaders[number].Close();
-                    stoppableReaders[number].Dispose();
-                    stoppableReaders[number] = null;
-                    stoppableState[number] = SoundState.Null;
+                    DisposeSound(number);
                 }
                 if (stoppablePlayers[number + Config._currentConfig.MaxSounds] != null)
                 {
-                    stoppablePlayers[number + Config._currentConfig.MaxSounds].Stop();
-                    stoppablePlayers[number + Config._currentConfig.MaxSounds].Dispose();
-                    stoppablePlayers[number + Config._currentConfig.MaxSounds] = null;
-                    stoppableReaders[number + Config._currentConfig.MaxSounds].Close();
-                    stoppableReaders[number + Config._currentConfig.MaxSounds] = null;
+                    DisposeSound(number + Config._currentConfig.MaxSounds);
                 }
             }
             else
-                KillAllSounds();
+                for (int i = 0; i < players.Count;)
+                    if (players[i].SoundNumber == number)
+                        DisposeSound(i);
+                    else
+                        i++;
         }
 
         public static void KillAllSounds()
@@ -416,20 +398,44 @@ namespace SoundMachine
                 {
                     if (stoppablePlayers[i] != null)
                     {
-                        stoppablePlayers[i].Stop();
+                        DisposeSound(i);
                     }
                 }
                 InitializeStoppables();
             }
             else
             {
-                for (int i = 0; i < players.Count; i++)
+                while(players.Count != 0)
                 {
-                    if (readers[i] != null)
+                    if (readers[0] != null)
                     {
-                        readers[i].Close();
+                        DisposeSound(0);
                     }
                 }
+            }
+        }
+
+        private static void DisposeSound(int number)
+        {
+            if (Config._currentConfig.InputMode == SoundMode.StartStop || Config._currentConfig.InputMode == SoundMode.Loop)
+            {
+                stoppablePlayers[number].Stop();
+                stoppablePlayers[number].Dispose();
+                stoppablePlayers[number] = null;
+                stoppableReaders[number].Close();
+                stoppableReaders[number].Dispose();
+                stoppableReaders[number] = null;
+                if(number < Config._currentConfig.MaxSounds)
+                    stoppableState[number] = SoundState.Null;
+            }
+            else
+            {
+                players[number].Stop();
+                players[number].Dispose();
+                players.RemoveAt(number);
+                readers[number].Close();
+                readers[number].Dispose();
+                readers.RemoveAt(number);
             }
         }
 

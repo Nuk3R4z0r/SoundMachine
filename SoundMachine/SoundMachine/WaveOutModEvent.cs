@@ -11,6 +11,5 @@ namespace SoundMachine
     {
         public bool Stoppable = false;
         public int SoundNumber = -1;
-        public int SoundIndex = -1;
     }
 }
