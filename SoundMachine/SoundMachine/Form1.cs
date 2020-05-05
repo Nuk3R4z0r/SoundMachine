@@ -217,7 +217,7 @@ namespace SoundMachine
         private void TextboxTextChanged(object o, EventArgs e)
         {
             TextBox tb = ((TextBox)o);
-            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+            Regex rgx = new Regex("[\\/:*\"<>|]");
             tb.Text = rgx.Replace(tb.Text, "");
 
             int macroNumber = Convert.ToInt16(tb.Parent.Name.Substring(3));
