@@ -14,7 +14,8 @@ namespace SoundMachine
             ToggleSystem,
             ToggleMode,
             ToggleProfile,
-            ToggleOverlay
+            ToggleOverlay,
+            Record
         }
         private const int WH_KEYBOARD_LL = 13;
         private const int WM_KEYDOWN = 0x0100;
@@ -70,6 +71,8 @@ namespace SoundMachine
                         Config._currentConfig.ToggleSystemBinding = vkCode;
                     else if (SetBindingForm._currentForm.BindingType == KeyBinding.ToggleMode)
                         Config._currentConfig.ToggleModeBinding = vkCode;
+                    else if (SetBindingForm._currentForm.BindingType == KeyBinding.Record)
+                        Config._currentConfig.RecordBinding = vkCode;
                     else
                     {
                         for (int i = 0; i < SoundProfile.CurrentSoundProfile.Bindings.Length; i++)
@@ -118,7 +121,7 @@ namespace SoundMachine
                             SettingsForm._currentForm.SetKeyPressBoxSelectedIndex();
                         return (System.IntPtr)1;
                     }
-                    else if ((Keys)vkCode == Keys.LControlKey) //Control button on keyboard
+                    else if (vkCode == Config._currentConfig.RecordBinding) //Control button on keyboard
                         isRecording = true; //Enables recording
                     else if (!isRecording)
                     {
@@ -136,7 +139,7 @@ namespace SoundMachine
             }
             else if (nCode >= 0 && wParam == (IntPtr)WM_KEYUP)
             {
-                if ((Keys)vkCode == Keys.LControlKey) //Control button on keyboard
+                if (vkCode == Config._currentConfig.RecordBinding) //Control button on keyboard
                 {
                     isRecording = false;
                     SoundSystem.StopRecording(); //if ctrl is released stop all recording

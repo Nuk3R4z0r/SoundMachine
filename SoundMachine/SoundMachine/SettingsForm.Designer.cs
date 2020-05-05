@@ -60,6 +60,8 @@
             this.btnProfileBinding = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
             this.btnHomeDir = new System.Windows.Forms.Button();
+            this.btnRecordBinding = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numSoundsBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -344,6 +346,8 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.label11);
+            this.groupBox5.Controls.Add(this.btnRecordBinding);
             this.groupBox5.Controls.Add(this.label9);
             this.groupBox5.Controls.Add(this.btnOverlayBinding);
             this.groupBox5.Controls.Add(this.label8);
@@ -362,7 +366,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 142);
+            this.label9.Location = new System.Drawing.Point(7, 142);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(82, 13);
             this.label9.TabIndex = 20;
@@ -380,7 +384,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 100);
+            this.label8.Location = new System.Drawing.Point(7, 100);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(79, 13);
             this.label8.TabIndex = 18;
@@ -413,6 +417,24 @@
             this.btnHomeDir.Text = "Set Home Directory";
             this.btnHomeDir.UseVisualStyleBackColor = true;
             this.btnHomeDir.Click += new System.EventHandler(this.btnHomeDir_Click);
+            // 
+            // btnRecordBinding
+            // 
+            this.btnRecordBinding.Location = new System.Drawing.Point(128, 158);
+            this.btnRecordBinding.Name = "btnRecordBinding";
+            this.btnRecordBinding.Size = new System.Drawing.Size(75, 23);
+            this.btnRecordBinding.TabIndex = 22;
+            this.btnRecordBinding.UseVisualStyleBackColor = true;
+            this.btnRecordBinding.Click += new System.EventHandler(this.btnRecordBinding_Click);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(125, 142);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(45, 13);
+            this.label11.TabIndex = 23;
+            this.label11.Text = "Record:";
             // 
             // SettingsForm
             // 
@@ -479,5 +501,7 @@
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.CheckBox muteInputCheckBox;
         private System.Windows.Forms.Button btnHomeDir;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Button btnRecordBinding;
     }
 }

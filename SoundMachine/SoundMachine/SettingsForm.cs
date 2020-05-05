@@ -23,7 +23,10 @@ namespace SoundMachine
             btnBehaviorBinding.Text = ((Keys)Config._currentConfig.ToggleModeBinding).ToString();
             btnProfileBinding.Text = ((Keys)Config._currentConfig.ToggleProfileBinding).ToString();
             btnOverlayBinding.Text = ((Keys)Config._currentConfig.ToggleOverlayBinding).ToString();
+            btnRecordBinding.Text = ((Keys)Config._currentConfig.RecordBinding).ToString();
+
             keyPressBox.SelectedItem = Config._currentConfig.InputMode.ToString();
+            
             LoadDevices();
             if (!Config._currentConfig.InputPassthroughEnabled)
                 DeviceInBox.Enabled = false;
@@ -233,6 +236,18 @@ namespace SoundMachine
             {
                 Utilities.MoveHome(dialog.SelectedPath);
             }
+        }
+
+        private void btnRecordBinding_Click(object sender, EventArgs e)
+        {
+            SetBindingForm setBindingForm = new SetBindingForm();
+            setBindingForm.BindingType = KeyListener.KeyBinding.Record;
+            setBindingForm.ShowDialog();
+            if (setBindingForm.NewBindingSet)
+            {
+                btnRecordBinding.Text = ((Keys)Config._currentConfig.RecordBinding).ToString();
+            }
+            Form1._currentForm.UpdateTip();
         }
     }
 }

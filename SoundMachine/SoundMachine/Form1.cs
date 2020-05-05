@@ -95,7 +95,8 @@ namespace SoundMachine
 
             //Bottom left tip label
             Label lblTip = new Label();
-            lblTip.Text = "Hold CTRL + Binding to record";
+            lblTip.Name = "lblTip";
+            lblTip.Text = "Hold " + ((Keys)Config._currentConfig.RecordBinding).ToString() + " + Binding to record";
             lblTip.Size = new Size(200, 15);
             lblTip.Location = new Point(15, _SCREENHEIGHT - 60);
 
@@ -115,17 +116,18 @@ namespace SoundMachine
             Button btnToggleSystem = new Button();
             btnToggleSystem.Name = "btnToggleSystem";
             btnToggleSystem.Size = new Size(100, 30);
-            btnToggleSystem.Location = new Point(_SCREENWIDTH / 3, _SCREENHEIGHT - 75);
-            btnToggleSystem.Text = "Enabled";
+            btnToggleSystem.Location = new Point(_SCREENWIDTH - (_SCREENWIDTH / 2) + 25, 5);
+            btnToggleSystem.Text = "Sound Enabled";
             btnToggleSystem.BackColor = Color.Green;
             btnToggleSystem.Click += new EventHandler(ButtonClickToggleSystem);
+            btnToggleSystem.BringToFront();
 
+            Controls.Add(btnToggleSystem);
             Controls.Add(toolStrip);
             Controls.Add(lblVol);
             Controls.Add(tbVolume);
             Controls.Add(inputLbl3);
             Controls.Add(lblTip);
-            Controls.Add(btnToggleSystem);
         }
 
         //Dynamically Create Buttons
@@ -441,7 +443,7 @@ namespace SoundMachine
                 btn = (Button)Controls.Find("btnToggleSystem", false).First();
 
             KeyListener._listenerEnabled = !KeyListener._listenerEnabled;
-            btn.Text = KeyListener._listenerEnabled == true ? "Enabled" : "Disabled";
+            btn.Text = KeyListener._listenerEnabled == true ? "Sound Enabled" : "Sound Muted";
             btn.BackColor = KeyListener._listenerEnabled == true ? Color.Green : Color.PaleVioletRed;
             if (KeyListener._listenerEnabled == false)
             {
@@ -465,6 +467,12 @@ namespace SoundMachine
             Button btn = (Button)Controls.Find("btn" + btnNum, false).First();
             TextBox tb = (TextBox)btn.Controls.Find("Text", false).First();
             tb.Text = text;
+        }
+
+        public void UpdateTip()
+        {
+            Label lbl = (Label)Controls.Find("lblTip", false).First();
+            lbl.Text = "Hold " + ((Keys)Config._currentConfig.RecordBinding).ToString() + " + Binding to record";
         }
 
         private void SetVolume(object o, EventArgs e)

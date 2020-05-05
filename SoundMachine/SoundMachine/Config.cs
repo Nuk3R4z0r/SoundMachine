@@ -250,6 +250,20 @@ namespace SoundMachine
             }
         }
 
+        private int _recordBinding;
+        public int RecordBinding
+        {
+            get { return _recordBinding; }
+            set
+            {
+                if (_recordBinding != value)
+                {
+                    _recordBinding = value;
+                    SaveConfig();
+                }
+            }
+        }
+
         private SoundSystem.SoundMode _inputMode;
         public SoundSystem.SoundMode InputMode { 
             get { return _inputMode; }
@@ -279,6 +293,7 @@ namespace SoundMachine
             _interruptKeys = false;
             _inputMode = SoundSystem.SoundMode.Interrupt;
             _currentProfile = 0;
+            _recordBinding = (int)Keys.LControlKey;
             _profiles.Add("Profile0");
         }
 
@@ -300,6 +315,7 @@ namespace SoundMachine
             _toggleModeBinding = blueprint.ToggleModeBinding;
             _toggleProfileBinding = blueprint.ToggleProfileBinding;
             _toggleOverlayBinding = blueprint.ToggleOverlayBinding;
+            _recordBinding = blueprint.RecordBinding == 0 ? (int)Keys.LControlKey : blueprint.RecordBinding;
             _inputMode = blueprint.InputMode;
             _profiles = blueprint.Profiles == null ? new List<string>() : blueprint.Profiles;
             if (_profiles.Count == 0)
