@@ -58,7 +58,7 @@
             this.btnOverlayBinding = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.btnProfileBinding = new System.Windows.Forms.Button();
-            this.label10 = new System.Windows.Forms.Label();
+            this.lblVersion = new System.Windows.Forms.Label();
             this.btnHomeDir = new System.Windows.Forms.Button();
             this.btnRecordBinding = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
@@ -399,14 +399,13 @@
             this.btnProfileBinding.UseVisualStyleBackColor = true;
             this.btnProfileBinding.Click += new System.EventHandler(this.btnProfileBinding_Click);
             // 
-            // label10
+            // lblVersion
             // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(193, 374);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(60, 13);
-            this.label10.TabIndex = 18;
-            this.label10.Text = "Version 1.3";
+            this.lblVersion.AutoSize = true;
+            this.lblVersion.Location = new System.Drawing.Point(193, 374);
+            this.lblVersion.Name = "lblVersion";
+            this.lblVersion.Size = new System.Drawing.Size(0, 13);
+            this.lblVersion.TabIndex = 18;
             // 
             // btnHomeDir
             // 
@@ -442,7 +441,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(465, 395);
             this.Controls.Add(this.btnHomeDir);
-            this.Controls.Add(this.label10);
+            this.Controls.Add(this.lblVersion);
             this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
@@ -498,7 +497,7 @@
         private System.Windows.Forms.Button btnOverlayBinding;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Button btnProfileBinding;
-        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Label lblVersion;
         private System.Windows.Forms.CheckBox muteInputCheckBox;
         private System.Windows.Forms.Button btnHomeDir;
         private System.Windows.Forms.Label label11;

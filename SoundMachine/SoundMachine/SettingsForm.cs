@@ -31,6 +31,10 @@ namespace SoundMachine
             if (!Config._currentConfig.InputPassthroughEnabled)
                 DeviceInBox.Enabled = false;
 
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            lblVersion.Text = "Version " + fvi.FileVersion;
+
             _currentForm = this;
         }
 
