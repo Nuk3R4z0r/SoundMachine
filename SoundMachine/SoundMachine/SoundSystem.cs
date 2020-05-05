@@ -266,20 +266,22 @@ namespace SoundMachine
             WaveOutModEvent wo = (WaveOutModEvent)sender;
             if (wo.Stoppable)
             {
-                for(int i = 0; i < stoppablePlayers.Length; i++)
+                TimeSpan ts = new TimeSpan(0, 0, 0);
+                float volume = Config._currentConfig.CurrentVolume / 10.0f;
+                for (int i = 0; i < stoppablePlayers.Length; i++)
                 {
                     if (stoppablePlayers[i] == wo)
                     {
-                            if (Config._currentConfig.InputMode == SoundMode.Loop)
-                            {
-                                stoppableReaders[i].CurrentTime = new TimeSpan(0, 0, 0);
-                                stoppablePlayers[i].Volume = Config._currentConfig.CurrentVolume / 10.0f;
-                                stoppablePlayers[i].Play();
-                            }
-                            else
-                            {
-                                DisposeSound(i);
-                            }
+                        if (Config._currentConfig.InputMode == SoundMode.Loop)
+                        {
+                            stoppableReaders[i].CurrentTime = ts;
+                            stoppablePlayers[i].Volume = volume;
+                            stoppablePlayers[i].Play();
+                        }
+                        else
+                        {
+                            DisposeSound(i);
+                        }
                         break;
                     }
                 }
@@ -340,7 +342,7 @@ namespace SoundMachine
                 while (_stopListening == false)
                 {
                     vSampleProvider.Volume = Config._currentConfig.CurrentVolume / 10.0f;
-                    Thread.Sleep(10);
+                    Thread.Sleep(25);
                 }
                 
                 continuousWi.StopRecording();
