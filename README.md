@@ -1,5 +1,5 @@
 # SoundMachine
-Soundboard for playing sounds. Can record by holding control and holding the binding you've set per sound.
+Soundboard for playing sounds. Can record by holding left-control and holding the binding you've set per sound.
 
 This program was made with a virtual cable setup in mind.
 It will work if your setup has the physical capabilities as well. 
