@@ -233,15 +233,15 @@ namespace SoundMachine
                     File.Delete(saveFile);
                 }
 
-                //Saves to config
-                SoundProfile.CurrentSoundProfile.Sounds[number] = saveFile;
-                SoundProfile.CurrentSoundProfile.Texts[number] = "Macro" + number;
-                SoundProfile.CurrentSoundProfile.SaveSoundProfile();
-
                 //Starts recording which starts DataAvailable event
 
                 _waveFile = new WaveFileWriter(saveFile, _waveSource.WaveFormat);
                 _waveSource.StartRecording();
+
+                //Saves to config
+                SoundProfile.CurrentSoundProfile.Sounds[number] = saveFile;
+                SoundProfile.CurrentSoundProfile.Texts[number] = "Macro" + number;
+                SoundProfile.CurrentSoundProfile.SaveSoundProfile();
 
                 //For UI
                 Form1._currentForm.UpdateTextbox(number, "Macro" + number);
