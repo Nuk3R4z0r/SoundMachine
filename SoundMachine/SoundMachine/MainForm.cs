@@ -9,9 +9,9 @@ using System.Collections.Generic;
 
 namespace SoundMachine
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public static Form1 _currentForm;
+        public static MainForm _currentForm;
         public static bool _FILELOCK;
         private string _NEWLINES;
         private const int _MARGIN = 40;
@@ -24,7 +24,7 @@ namespace SoundMachine
         private List<BindingButton> btnList;
         private ComboBox ProfileBox;
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             _FILELOCK = false;
@@ -39,8 +39,9 @@ namespace SoundMachine
 
             RenderCanvas();
             SoundSystem.PopulateOutputDevices();
+            SettingsForm settingsForm = new SettingsForm();
 
-            if(Config._currentConfig.InputPassthroughEnabled)
+            if (Config.CurrentConfig.InputPassthroughEnabled)
             {
                 Thread t = new Thread(SoundSystem.ContinuousInputPlayback);
                 t.Start();
@@ -51,9 +52,9 @@ namespace SoundMachine
 
         public void RenderCanvas()
         {
-            SoundProfile.LoadSoundProfile(Config._currentConfig.Profiles[Config._currentConfig.CurrentProfile]);
+            SoundProfile.LoadSoundProfile(Config.CurrentConfig.Profiles[Config.CurrentConfig.CurrentProfile]);
 
-            _MAXBUTTONS = Config._currentConfig.MaxSounds;
+            _MAXBUTTONS = Config.CurrentConfig.MaxSounds;
             _MAXCOLUMNS = 5;
             _MAXROWS = (int)Math.Ceiling((double)_MAXBUTTONS / _MAXCOLUMNS);
             _SCREENHEIGHT = (_MAXROWS * (_BUTTONSIZE.Height + _MARGIN)) + _MARGIN * 2;
@@ -82,8 +83,8 @@ namespace SoundMachine
             ProfileBox.Size = new Size(200, 20);
             ProfileBox.Location = new Point(_SCREENWIDTH - ProfileBox.Size.Width - 35, 3);
             ProfileBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            ProfileBox.Items.AddRange(Config._currentConfig.Profiles.ToArray());
-            ProfileBox.SelectedIndex = Config._currentConfig.CurrentProfile;
+            ProfileBox.Items.AddRange(Config.CurrentConfig.Profiles.ToArray());
+            ProfileBox.SelectedIndex = Config.CurrentConfig.CurrentProfile;
             ProfileBox.SelectedIndexChanged += new EventHandler(SetProfile);
             Controls.Add(ProfileBox);
 
@@ -96,7 +97,7 @@ namespace SoundMachine
             //Bottom left tip label
             Label lblTip = new Label();
             lblTip.Name = "lblTip";
-            lblTip.Text = "Hold " + ((Keys)Config._currentConfig.RecordBinding).ToString() + " + Binding to record";
+            lblTip.Text = "Hold " + ((Keys)Config.CurrentConfig.RecordBinding).ToString() + " + Binding to record";
             lblTip.Size = new Size(200, 15);
             lblTip.Location = new Point(15, _SCREENHEIGHT - 60);
 
@@ -105,7 +106,7 @@ namespace SoundMachine
             tbVolume.Size = new Size(300, 15);
             tbVolume.TickFrequency = 2;
             tbVolume.Location = new Point(_SCREENWIDTH - tbVolume.Size.Width - 20, _SCREENHEIGHT - tbVolume.Size.Height - 30);
-            tbVolume.Value = Config._currentConfig.CurrentVolume;
+            tbVolume.Value = Config.CurrentConfig.CurrentVolume;
             tbVolume.ValueChanged += new EventHandler(SetVolume);
 
             Label lblVol = new Label();
@@ -183,8 +184,8 @@ namespace SoundMachine
         public void UpdateButtons()
         {
             ProfileBox.Items.Clear();
-            ProfileBox.Items.AddRange(Config._currentConfig.Profiles.ToArray());
-            ProfileBox.SelectedIndex = Config._currentConfig.CurrentProfile;
+            ProfileBox.Items.AddRange(Config.CurrentConfig.Profiles.ToArray());
+            ProfileBox.SelectedIndex = Config.CurrentConfig.CurrentProfile;
             int i = 0;
             foreach (BindingButton b in btnList)
             {
@@ -200,9 +201,9 @@ namespace SoundMachine
 
         private void SetProfile(object o, EventArgs e)
         {
-            if (ProfileBox.SelectedIndex != Config._currentConfig.CurrentProfile)
+            if (ProfileBox.SelectedIndex != Config.CurrentConfig.CurrentProfile)
             {
-                Config._currentConfig.CurrentProfile = ((ComboBox)o).SelectedIndex;
+                Config.CurrentConfig.CurrentProfile = ((ComboBox)o).SelectedIndex;
                 UpdateButtons();
             }
         }
@@ -269,10 +270,10 @@ namespace SoundMachine
             if (profileForm.NewProfile != "")
             {
                 ((ComboBox)Controls.Find("ProfileBox", false).First()).Items.Add(profileForm.NewProfile);
-                Config._currentConfig.CurrentProfile = Config._currentConfig.Profiles.Count - 1;
+                Config.CurrentConfig.CurrentProfile = Config.CurrentConfig.Profiles.Count - 1;
             }
             UpdateButtons();
-            Config._currentConfig.SaveConfig();
+            Config.CurrentConfig.SaveConfig();
         }
 
         private void ButtonRename(object o, EventArgs e)
@@ -283,12 +284,12 @@ namespace SoundMachine
             profileForm.ShowDialog();
             if (profileForm.NewProfile != "")
             {
-                ((ComboBox)Controls.Find("ProfileBox", false).First()).Items[Config._currentConfig.CurrentProfile] = profileForm.NewProfile;
-                Utilities.MoveProfile(Config._currentConfig.Profiles[Config._currentConfig.CurrentProfile], profileForm.NewProfile);
-                Config._currentConfig.Profiles[Config._currentConfig.CurrentProfile] = profileForm.NewProfile;
+                ((ComboBox)Controls.Find("ProfileBox", false).First()).Items[Config.CurrentConfig.CurrentProfile] = profileForm.NewProfile;
+                Utilities.MoveProfile(Config.CurrentConfig.Profiles[Config.CurrentConfig.CurrentProfile], profileForm.NewProfile);
+                Config.CurrentConfig.Profiles[Config.CurrentConfig.CurrentProfile] = profileForm.NewProfile;
             }
             UpdateButtons();
-            Config._currentConfig.SaveConfig();
+            Config.CurrentConfig.SaveConfig();
         }
 
         private void ButtonImport(object o, EventArgs e)
@@ -303,7 +304,7 @@ namespace SoundMachine
                 if (Utilities.ImportProfile(fd.FileName))
                 {
                     UpdateButtons();
-                    Config._currentConfig.SaveConfig();
+                    Config.CurrentConfig.SaveConfig();
                 }
             }
         }
@@ -312,31 +313,31 @@ namespace SoundMachine
         {
             try
             {
-                Directory.Delete(Config.WorkingDir + Config._currentConfig.Profiles[Config._currentConfig.CurrentProfile], true);
+                Directory.Delete(Config.WorkingDir + Config.CurrentConfig.Profiles[Config.CurrentConfig.CurrentProfile], true);
             }
             catch (Exception x) { }
             
-            Config._currentConfig.Profiles.RemoveAt(Config._currentConfig.CurrentProfile);
+            Config.CurrentConfig.Profiles.RemoveAt(Config.CurrentConfig.CurrentProfile);
 
-            if (Config._currentConfig.Profiles.Count == 0)
+            if (Config.CurrentConfig.Profiles.Count == 0)
             {
-                Config._currentConfig.Profiles.Add("Profile0");
+                Config.CurrentConfig.Profiles.Add("Profile0");
             }
 
-            if (Config._currentConfig.CurrentProfile > 0)
-                Config._currentConfig.CurrentProfile--;
+            if (Config.CurrentConfig.CurrentProfile > 0)
+                Config.CurrentConfig.CurrentProfile--;
             else
-                Config._currentConfig.CurrentProfile = -1;
+                Config.CurrentConfig.CurrentProfile = -1;
 
             UpdateButtons();
-            Config._currentConfig.SaveConfig();
+            Config.CurrentConfig.SaveConfig();
         }
 
 
         //♫ button eventhandler, chooses sound file for button
         private void ButtonSoundDialog(object o, EventArgs e)
         {
-            string savedir = Config.WorkingDir + SoundProfile.CurrentSoundProfile.ProfileName + "\\Sounds\\";
+            string savedir = SoundProfile.SoundDirectory;
             if (!Directory.Exists(savedir))
             {
                 Directory.CreateDirectory(savedir);
@@ -355,7 +356,7 @@ namespace SoundMachine
                 RemoveDuplicateSound(savedir + fullName);
 
                 SoundProfile.CurrentSoundProfile.Texts[id] = name;
-                SoundProfile.CurrentSoundProfile.Sounds[id] = savedir + fullName;
+                SoundProfile.CurrentSoundProfile.Sounds[id] = fullName;
                 SoundProfile.CurrentSoundProfile.SaveSoundProfile();
 
                 if (File.Exists(savedir + fullName))
@@ -363,7 +364,6 @@ namespace SoundMachine
                     if (!File.Equals(savedir + fullName, fd.FileName))
                     {
                         File.Delete(savedir + fullName);
-                        
                     }
                 }
                 
@@ -448,7 +448,7 @@ namespace SoundMachine
             if (KeyListener._listenerEnabled == false)
             {
                 SoundSystem.KillAllSounds();
-                if (Config._currentConfig.MuteInputWithSoundSystem)
+                if (Config.CurrentConfig.MuteInputWithSoundSystem)
                     SoundSystem.InputDisabled = true;
             }
             else
@@ -472,13 +472,13 @@ namespace SoundMachine
         public void UpdateTip()
         {
             Label lbl = (Label)Controls.Find("lblTip", false).First();
-            lbl.Text = "Hold " + ((Keys)Config._currentConfig.RecordBinding).ToString() + " + Binding to record";
+            lbl.Text = "Hold " + ((Keys)Config.CurrentConfig.RecordBinding).ToString() + " + Binding to record";
         }
 
         private void SetVolume(object o, EventArgs e)
         {
             TrackBar tbTemp = (TrackBar)Controls.Find("tbVolume", false).First();
-            Config._currentConfig.CurrentVolume = tbTemp.Value;
+            Config.CurrentConfig.CurrentVolume = tbTemp.Value;
         }
     }
 }
