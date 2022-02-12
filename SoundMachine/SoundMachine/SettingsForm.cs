@@ -12,23 +12,23 @@ namespace SoundMachine
         public SettingsForm()
         {
             InitializeComponent();
-            interruptInputBox.Checked = Config._currentConfig.InterruptKeys;
-            numSoundsBox.Value = Config._currentConfig.MaxSounds;
-            inputCheckBox.Checked = Config._currentConfig.InputPassthroughEnabled;
-            inputChannelsBox.SelectedIndex = Config._currentConfig.InputChannels - 1;
-            inputSamplerateBox.SelectedIndex = inputSamplerateBox.FindStringExact(Config._currentConfig.InputSampleRate.ToString());
-            playbackCheckBox.Checked = Config._currentConfig.SoundPlaybackEnabled;
-            muteInputCheckBox.Checked = Config._currentConfig.MuteInputWithSoundSystem;
-            btnToggleBinding.Text = ((Keys)Config._currentConfig.ToggleSystemBinding).ToString();
-            btnBehaviorBinding.Text = ((Keys)Config._currentConfig.ToggleModeBinding).ToString();
-            btnProfileBinding.Text = ((Keys)Config._currentConfig.ToggleProfileBinding).ToString();
-            btnOverlayBinding.Text = ((Keys)Config._currentConfig.ToggleOverlayBinding).ToString();
-            btnRecordBinding.Text = ((Keys)Config._currentConfig.RecordBinding).ToString();
+            interruptInputBox.Checked = Config.CurrentConfig.InterruptKeys;
+            numSoundsBox.Value = Config.CurrentConfig.MaxSounds;
+            inputCheckBox.Checked = Config.CurrentConfig.InputPassthroughEnabled;
+            inputChannelsBox.SelectedIndex = Config.CurrentConfig.InputChannels - 1;
+            inputSamplerateBox.SelectedIndex = inputSamplerateBox.FindStringExact(Config.CurrentConfig.InputSampleRate.ToString());
+            playbackCheckBox.Checked = Config.CurrentConfig.SoundPlaybackEnabled;
+            muteInputCheckBox.Checked = Config.CurrentConfig.MuteInputWithSoundSystem;
+            btnToggleBinding.Text = ((Keys)Config.CurrentConfig.ToggleSystemBinding).ToString();
+            btnBehaviorBinding.Text = ((Keys)Config.CurrentConfig.ToggleModeBinding).ToString();
+            btnProfileBinding.Text = ((Keys)Config.CurrentConfig.ToggleProfileBinding).ToString();
+            btnOverlayBinding.Text = ((Keys)Config.CurrentConfig.ToggleOverlayBinding).ToString();
+            btnRecordBinding.Text = ((Keys)Config.CurrentConfig.RecordBinding).ToString();
 
-            keyPressBox.SelectedItem = Config._currentConfig.InputMode.ToString();
+            keyPressBox.SelectedItem = Config.CurrentConfig.InputMode.ToString();
             
             LoadDevices();
-            if (!Config._currentConfig.InputPassthroughEnabled)
+            if (!Config.CurrentConfig.InputPassthroughEnabled)
                 DeviceInBox.Enabled = false;
 
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
@@ -47,17 +47,17 @@ namespace SoundMachine
         private void interruptInputBox_CheckedChanged(object sender, EventArgs e)
         {
             if (interruptInputBox.Checked)
-                Config._currentConfig.InterruptKeys = true;
+                Config.CurrentConfig.InterruptKeys = true;
             else
-                Config._currentConfig.InterruptKeys = false;
+                Config.CurrentConfig.InterruptKeys = false;
         }
 
         private void numSoundsBox_ValueChanged(object sender, EventArgs e)
         {
-            if (((NumericUpDown)sender).Value != Config._currentConfig.MaxSounds)
+            if (((NumericUpDown)sender).Value != Config.CurrentConfig.MaxSounds)
             {
-                Config._currentConfig.MaxSounds = (int)numSoundsBox.Value;
-                Form1._currentForm.RenderCanvas();
+                Config.CurrentConfig.MaxSounds = (int)numSoundsBox.Value;
+                MainForm._currentForm.RenderCanvas();
                 SoundProfile.CurrentSoundProfile.SaveSoundProfile();
             }
         }
@@ -65,12 +65,20 @@ namespace SoundMachine
         private void inputCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             DeviceInBox.Enabled = inputCheckBox.Checked;
-            Config._currentConfig.InputPassthroughEnabled = inputCheckBox.Checked;
+            Config.CurrentConfig.InputPassthroughEnabled = inputCheckBox.Checked;
+        }
+
+        public void UnckeckInputCheckBox()
+        {
+            Invoke((MethodInvoker)delegate
+            { 
+                inputCheckBox.Checked = false;
+            });
         }
 
         private void muteInputCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            Config._currentConfig.MuteInputWithSoundSystem = muteInputCheckBox.Checked;
+            Config.CurrentConfig.MuteInputWithSoundSystem = muteInputCheckBox.Checked;
             if (KeyListener._listenerEnabled == false)
                 SoundSystem.InputDisabled = true;
             else
@@ -79,28 +87,28 @@ namespace SoundMachine
 
         private void inputChannelsBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (Config._currentConfig.InputChannels != inputChannelsBox.SelectedIndex + 1)
+            if (Config.CurrentConfig.InputChannels != inputChannelsBox.SelectedIndex + 1)
             {
-                Config._currentConfig.InputChannels = inputChannelsBox.SelectedIndex + 1;
+                Config.CurrentConfig.InputChannels = inputChannelsBox.SelectedIndex + 1;
                 SoundSystem.resetListener();
             }
         }
 
         private void inputSamplerateBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (Config._currentConfig.InputSampleRate.ToString() != inputSamplerateBox.Items[inputSamplerateBox.SelectedIndex].ToString())
+            if (Config.CurrentConfig.InputSampleRate.ToString() != inputSamplerateBox.Items[inputSamplerateBox.SelectedIndex].ToString())
             {
-                Config._currentConfig.InputSampleRate = Convert.ToInt32(inputSamplerateBox.Items[inputSamplerateBox.SelectedIndex]);
+                Config.CurrentConfig.InputSampleRate = Convert.ToInt32(inputSamplerateBox.Items[inputSamplerateBox.SelectedIndex]);
                 SoundSystem.resetListener();
             }
         }
 
         private void playbackCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (Config._currentConfig.SoundPlaybackEnabled != playbackCheckBox.Checked)
+            if (Config.CurrentConfig.SoundPlaybackEnabled != playbackCheckBox.Checked)
             {
                 SoundSystem.KillAllSounds();
-                Config._currentConfig.SoundPlaybackEnabled = playbackCheckBox.Checked;
+                Config.CurrentConfig.SoundPlaybackEnabled = playbackCheckBox.Checked;
             }
         }
 
@@ -112,7 +120,7 @@ namespace SoundMachine
 
             if (setBindingForm.NewBindingSet)
             {
-                btnToggleBinding.Text = ((Keys)Config._currentConfig.ToggleSystemBinding).ToString();
+                btnToggleBinding.Text = ((Keys)Config.CurrentConfig.ToggleSystemBinding).ToString();
             }
         }
 
@@ -139,17 +147,17 @@ namespace SoundMachine
                     break;
             }
 
-            if (Config._currentConfig.InputMode != selectedMode)
+            if (Config.CurrentConfig.InputMode != selectedMode)
             {
                 SoundSystem.KillAllSounds();
-                Config._currentConfig.InputMode = selectedMode;
+                Config.CurrentConfig.InputMode = selectedMode;
             }
         }
 
         public void SetKeyPressBoxSelectedIndex()
         {
             if(!IsDisposed)
-                keyPressBox.SelectedItem = Config._currentConfig.InputMode.ToString();
+                keyPressBox.SelectedItem = Config.CurrentConfig.InputMode.ToString();
         }
 
         private void btnBehaviorBinding_Click(object sender, EventArgs e)
@@ -160,7 +168,7 @@ namespace SoundMachine
 
             if (setBindingForm.NewBindingSet)
             {
-                btnBehaviorBinding.Text = ((Keys)Config._currentConfig.ToggleModeBinding).ToString();
+                btnBehaviorBinding.Text = ((Keys)Config.CurrentConfig.ToggleModeBinding).ToString();
             }
         }
 
@@ -171,15 +179,15 @@ namespace SoundMachine
             DeviceInBox.Items.Clear();
             DeviceInBox.Items.AddRange(SoundSystem.PopulateInputDevices());
 
-            if (Config._currentConfig.CurrentOutputDevice >= DeviceOutBox.Items.Count)
-                Config._currentConfig.CurrentOutputDevice = DeviceOutBox.Items.Count - 1;
+            if (Config.CurrentConfig.CurrentOutputDevice >= DeviceOutBox.Items.Count)
+                Config.CurrentConfig.CurrentOutputDevice = DeviceOutBox.Items.Count - 1;
 
-            if (Config._currentConfig.CurrentInputDevice >= DeviceInBox.Items.Count)
-                Config._currentConfig.CurrentInputDevice = DeviceInBox.Items.Count - 1;
+            if (Config.CurrentConfig.CurrentInputDevice >= DeviceInBox.Items.Count)
+                Config.CurrentConfig.CurrentInputDevice = DeviceInBox.Items.Count - 1;
 
 
-            DeviceOutBox.SelectedIndex = Config._currentConfig.CurrentOutputDevice;
-            DeviceInBox.SelectedIndex = Config._currentConfig.CurrentInputDevice;
+            DeviceOutBox.SelectedIndex = Config.CurrentConfig.CurrentOutputDevice;
+            DeviceInBox.SelectedIndex = Config.CurrentConfig.CurrentInputDevice;
             SoundSystem.resetListener();
         }
 
@@ -187,9 +195,9 @@ namespace SoundMachine
         private void SetOutputDeviceNumber(object o, EventArgs e)
         {
             ComboBox cb = (ComboBox)o;
-            if (Config._currentConfig.CurrentOutputDevice != cb.SelectedIndex)
+            if (Config.CurrentConfig.CurrentOutputDevice != cb.SelectedIndex)
             {
-                Config._currentConfig.CurrentOutputDevice = cb.SelectedIndex;
+                Config.CurrentConfig.CurrentOutputDevice = cb.SelectedIndex;
                 SoundSystem.resetListener();
                 SoundSystem.KillAllSounds();
             }
@@ -199,9 +207,9 @@ namespace SoundMachine
         private void SetInputDeviceNumber(object o, EventArgs e)
         {
             ComboBox cb = (ComboBox)o;
-            if (Config._currentConfig.CurrentInputDevice != cb.SelectedIndex)
+            if (Config.CurrentConfig.CurrentInputDevice != cb.SelectedIndex)
             {
-                Config._currentConfig.CurrentInputDevice = cb.SelectedIndex;
+                Config.CurrentConfig.CurrentInputDevice = cb.SelectedIndex;
                 SoundSystem.resetListener();
             }
         }
@@ -214,7 +222,7 @@ namespace SoundMachine
 
             if (setBindingForm.NewBindingSet)
             {
-                btnProfileBinding.Text = ((Keys)Config._currentConfig.ToggleProfileBinding).ToString();
+                btnProfileBinding.Text = ((Keys)Config.CurrentConfig.ToggleProfileBinding).ToString();
             }
         }
 
@@ -226,7 +234,7 @@ namespace SoundMachine
 
             if (setBindingForm.NewBindingSet)
             {
-                btnOverlayBinding.Text = ((Keys)Config._currentConfig.ToggleOverlayBinding).ToString();
+                btnOverlayBinding.Text = ((Keys)Config.CurrentConfig.ToggleOverlayBinding).ToString();
             }
         }
 
@@ -249,9 +257,15 @@ namespace SoundMachine
             setBindingForm.ShowDialog();
             if (setBindingForm.NewBindingSet)
             {
-                btnRecordBinding.Text = ((Keys)Config._currentConfig.RecordBinding).ToString();
+                btnRecordBinding.Text = ((Keys)Config.CurrentConfig.RecordBinding).ToString();
             }
-            Form1._currentForm.UpdateTip();
+            MainForm._currentForm.UpdateTip();
+        }
+
+        private void SettingsForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.Hide();
+            e.Cancel = true;
         }
     }
 }

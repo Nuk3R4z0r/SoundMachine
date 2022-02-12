@@ -54,14 +54,14 @@
             this.DeviceOutBox = new System.Windows.Forms.ComboBox();
             this.DeviceInBox = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.btnRecordBinding = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.btnOverlayBinding = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.btnProfileBinding = new System.Windows.Forms.Button();
             this.lblVersion = new System.Windows.Forms.Label();
             this.btnHomeDir = new System.Windows.Forms.Button();
-            this.btnRecordBinding = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numSoundsBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -210,9 +210,9 @@
             this.playbackCheckBox.AutoSize = true;
             this.playbackCheckBox.Location = new System.Drawing.Point(6, 85);
             this.playbackCheckBox.Name = "playbackCheckBox";
-            this.playbackCheckBox.Size = new System.Drawing.Size(182, 17);
+            this.playbackCheckBox.Size = new System.Drawing.Size(183, 17);
             this.playbackCheckBox.TabIndex = 11;
-            this.playbackCheckBox.Text = "Playback sound to default output";
+            this.playbackCheckBox.Text = "Duplicate sound to default output";
             this.playbackCheckBox.UseVisualStyleBackColor = true;
             this.playbackCheckBox.CheckedChanged += new System.EventHandler(this.playbackCheckBox_CheckedChanged);
             // 
@@ -363,6 +363,24 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Keybindings";
             // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(125, 142);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(45, 13);
+            this.label11.TabIndex = 23;
+            this.label11.Text = "Record:";
+            // 
+            // btnRecordBinding
+            // 
+            this.btnRecordBinding.Location = new System.Drawing.Point(128, 158);
+            this.btnRecordBinding.Name = "btnRecordBinding";
+            this.btnRecordBinding.Size = new System.Drawing.Size(75, 23);
+            this.btnRecordBinding.TabIndex = 22;
+            this.btnRecordBinding.UseVisualStyleBackColor = true;
+            this.btnRecordBinding.Click += new System.EventHandler(this.btnRecordBinding_Click);
+            // 
             // label9
             // 
             this.label9.AutoSize = true;
@@ -417,24 +435,6 @@
             this.btnHomeDir.UseVisualStyleBackColor = true;
             this.btnHomeDir.Click += new System.EventHandler(this.btnHomeDir_Click);
             // 
-            // btnRecordBinding
-            // 
-            this.btnRecordBinding.Location = new System.Drawing.Point(128, 158);
-            this.btnRecordBinding.Name = "btnRecordBinding";
-            this.btnRecordBinding.Size = new System.Drawing.Size(75, 23);
-            this.btnRecordBinding.TabIndex = 22;
-            this.btnRecordBinding.UseVisualStyleBackColor = true;
-            this.btnRecordBinding.Click += new System.EventHandler(this.btnRecordBinding_Click);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(125, 142);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(45, 13);
-            this.label11.TabIndex = 23;
-            this.label11.Text = "Record:";
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -452,6 +452,7 @@
             this.Name = "SettingsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Settings";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SettingsForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.numSoundsBox)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
