@@ -109,7 +109,7 @@ namespace SoundMachine
                     }
                     else if (vkCode == Config._currentConfig.ToggleSystemBinding)
                     {
-                        Form1._currentForm.ToggleSystemEnabled(null);
+                        MainForm._currentForm.ToggleSystemEnabled(null);
                         Overlay._currentOverlay.UpdateStatusColor();
                         return (System.IntPtr)1;
                     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace SoundMachine
@@ -10,7 +11,7 @@ namespace SoundMachine
     class Config
     {
         public static string WorkingDir;
-        public static Config _currentConfig;
+        public static Config CurrentConfig;
         
         private int _maxSounds;
         public int MaxSounds { 
@@ -113,6 +114,12 @@ namespace SoundMachine
                 {
                     _inputPassthroughEnabled = value;
                     SaveConfig();
+
+                    if(value == true)
+                    {
+                        Thread t = new Thread(SoundSystem.ContinuousInputPlayback);
+                        t.Start();
+                    }
                 }
             }
         }
@@ -294,7 +301,7 @@ namespace SoundMachine
             _inputMode = SoundSystem.SoundMode.Interrupt;
             _currentProfile = 0;
             _recordBinding = (int)Keys.LControlKey;
-            _profiles.Add("Profile0");
+            _profiles.Add("Profile 1");
         }
 
         public Config(Config blueprint)
@@ -319,7 +326,7 @@ namespace SoundMachine
             _inputMode = blueprint.InputMode;
             _profiles = blueprint.Profiles == null ? new List<string>() : blueprint.Profiles;
             if (_profiles.Count == 0)
-                _profiles.Add("Profile0");
+                _profiles.Add("Profile 1");
             _currentProfile = blueprint.CurrentProfile;
         }
 
@@ -348,22 +355,22 @@ namespace SoundMachine
                     using (StreamReader sr = new StreamReader(WorkingDir + "Config.cfg"))
                     {
                         BinaryFormatter bf = new BinaryFormatter();
-                        _currentConfig = new Config((Config)bf.Deserialize(sr.BaseStream));
+                        CurrentConfig = new Config((Config)bf.Deserialize(sr.BaseStream));
                     }
                 }
                 catch (Exception e)
                 {
                     MessageBox.Show(e.Message);
                     File.Delete(WorkingDir + "Config.cfg");
-                    _currentConfig = new Config(MaxButtons);
+                    CurrentConfig = new Config(MaxButtons);
                 }
             }
             else
             {
-                _currentConfig = new Config(MaxButtons);
+                CurrentConfig = new Config(MaxButtons);
             }
 
-            return _currentConfig;
+            return CurrentConfig;
         }
     }
 }

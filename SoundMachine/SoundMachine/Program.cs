@@ -22,7 +22,7 @@ namespace SoundMachine
 
                 Config.WorkingDir = WorkingDirectory.GetValue("WorkingDirectory").ToString();
                 Config.LoadConfig(10);
-                Application.Run(new Form1());
+                Application.Run(new MainForm());
             }
             catch(Exception e)
             {

@@ -13,6 +13,10 @@ namespace SoundMachine
     class SoundProfile
     {
         private static SoundProfile _currentSoundProfile;
+        public static string SoundDirectory
+        {
+            get { return Config.WorkingDir + SoundProfile.CurrentSoundProfile.ProfileName + "\\Sounds\\"; }
+        }
 
         public static SoundProfile CurrentSoundProfile
         {
@@ -38,9 +42,9 @@ namespace SoundMachine
         public SoundProfile(string profileName)
         {
             _profileName = profileName;
-            Sounds = new string[Config._currentConfig.MaxSounds];
-            Texts = new string[Config._currentConfig.MaxSounds];
-            Bindings = new int[Config._currentConfig.MaxSounds];
+            Sounds = new string[Config.CurrentConfig.MaxSounds];
+            Texts = new string[Config.CurrentConfig.MaxSounds];
+            Bindings = new int[Config.CurrentConfig.MaxSounds];
             AddDefaultBindings();
             _currentSoundProfile = this;
 
@@ -50,21 +54,21 @@ namespace SoundMachine
         public SoundProfile(SoundProfile blueprint)
         {
             _profileName = blueprint.ProfileName;
-            Sounds = blueprint.Sounds ?? new string[Config._currentConfig.MaxSounds];
-            Texts = blueprint.Texts ?? new string[Config._currentConfig.MaxSounds];
+            Sounds = blueprint.Sounds ?? new string[Config.CurrentConfig.MaxSounds];
+            Texts = blueprint.Texts ?? new string[Config.CurrentConfig.MaxSounds];
             if (blueprint.Bindings == null)
             { 
-                Bindings = new int[Config._currentConfig.MaxSounds];
+                Bindings = new int[Config.CurrentConfig.MaxSounds];
                 AddDefaultBindings();
             }
             else
                 Bindings = blueprint.Bindings;
 
-            if (Config._currentConfig.MaxSounds > Sounds.Length)
+            if (Config.CurrentConfig.MaxSounds > Sounds.Length)
             {
-                string[] tempSoundsArray = new string[Config._currentConfig.MaxSounds];
-                string[] tempTextsArray = new string[Config._currentConfig.MaxSounds];
-                int[] tempBindingsArray = new int[Config._currentConfig.MaxSounds];
+                string[] tempSoundsArray = new string[Config.CurrentConfig.MaxSounds];
+                string[] tempTextsArray = new string[Config.CurrentConfig.MaxSounds];
+                int[] tempBindingsArray = new int[Config.CurrentConfig.MaxSounds];
 
                 for (int i = 0; i < Sounds.Length; i++)
                 {
@@ -136,7 +140,6 @@ namespace SoundMachine
             {
                 new SoundProfile(profile);
             }
-
             Overlay._currentOverlay.UpdateProfileText();
 
             return _currentSoundProfile;
@@ -144,8 +147,8 @@ namespace SoundMachine
 
         public static void Next()
         {
-            Config._currentConfig.CurrentProfile++;
-            Form1._currentForm.UpdateButtons();
+            Config.CurrentConfig.CurrentProfile++;
+            MainForm._currentForm.UpdateButtons();
         }
     }
 }

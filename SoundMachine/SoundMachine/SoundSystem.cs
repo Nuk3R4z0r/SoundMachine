@@ -43,21 +43,21 @@ namespace SoundMachine
 
         public static void InitializeStoppables()
         {
-            stoppableReaders = new WaveFileReader[Config._currentConfig.MaxSounds * 2];
-            stoppablePlayers = new WaveOutModEvent[Config._currentConfig.MaxSounds * 2];
-            stoppableState = new SoundState[Config._currentConfig.MaxSounds];
+            stoppableReaders = new WaveFileReader[Config.CurrentConfig.MaxSounds * 2];
+            stoppablePlayers = new WaveOutModEvent[Config.CurrentConfig.MaxSounds * 2];
+            stoppableState = new SoundState[Config.CurrentConfig.MaxSounds];
         }
 
         private static void AddResourcesToPool(int number, WaveFileReader reader, WaveOutModEvent player, bool isPlayback)
         {
-            if (Config._currentConfig.InputMode == SoundMode.StartStop || Config._currentConfig.InputMode == SoundMode.Loop)
+            if (Config.CurrentConfig.InputMode == SoundMode.StartStop || Config.CurrentConfig.InputMode == SoundMode.Loop)
             {
                 player.SoundNumber = number;
                 player.Stoppable = true;
                     
                 stoppableState[number] = SoundState.Started;
                 if (isPlayback)
-                    number += Config._currentConfig.MaxSounds;
+                    number += Config.CurrentConfig.MaxSounds;
 
                 stoppablePlayers[number] = player;
                 stoppableReaders[number] = reader;
@@ -75,7 +75,7 @@ namespace SoundMachine
             WaveOutModEvent listenWo = new WaveOutModEvent();
             listenWo.DeviceNumber = -1;
             listenWo.PlaybackStopped += new EventHandler<StoppedEventArgs>(PlayBackStopped);
-            listenWo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
+            listenWo.Volume = Config.CurrentConfig.CurrentVolume / 10.0f;
 
             WaveFileReader reader = new WaveFileReader(fi);
             AddResourcesToPool(number, reader, listenWo, true);
@@ -90,7 +90,7 @@ namespace SoundMachine
             if (number == -1)
                 return false;
  
-            switch(Config._currentConfig.InputMode)
+            switch(Config.CurrentConfig.InputMode)
             {
                 case SoundMode.Stack:
                     StackSound(number);
@@ -114,18 +114,18 @@ namespace SoundMachine
         {
             if (stoppableState[number] == SoundState.Started)
             {
-                if (Config._currentConfig.SoundPlaybackEnabled)
-                    if(stoppablePlayers[number + Config._currentConfig.MaxSounds] != null)
-                        stoppablePlayers[number + Config._currentConfig.MaxSounds].Pause();
+                if (Config.CurrentConfig.SoundPlaybackEnabled)
+                    if(stoppablePlayers[number + Config.CurrentConfig.MaxSounds] != null)
+                        stoppablePlayers[number + Config.CurrentConfig.MaxSounds].Pause();
                 stoppablePlayers[number].Pause();
                 stoppableState[number] = SoundState.Stopped;
             }
             else if(stoppableState[number] == SoundState.Stopped)
             {
-                stoppablePlayers[number].Volume = Config._currentConfig.CurrentVolume / 10.0f;
+                stoppablePlayers[number].Volume = Config.CurrentConfig.CurrentVolume / 10.0f;
 
-                if (Config._currentConfig.SoundPlaybackEnabled)
-                    stoppablePlayers[number + Config._currentConfig.MaxSounds].Play();
+                if (Config.CurrentConfig.SoundPlaybackEnabled)
+                    stoppablePlayers[number + Config.CurrentConfig.MaxSounds].Play();
                 stoppablePlayers[number].Play();
                 stoppableState[number] = SoundState.Started;
             }
@@ -137,12 +137,12 @@ namespace SoundMachine
         
         private static void StackSound(int number)
         {
-            string fi = SoundProfile.CurrentSoundProfile.Sounds[number]; //gets location+filename of sound from config determined by numpad number
+            string fi = SoundProfile.SoundDirectory + SoundProfile.CurrentSoundProfile.Sounds[number]; //gets location+filename of sound from config determined by numpad number
             if (fi == null)
                 return;
 
             WaveOutModEvent wo = new WaveOutModEvent();
-            wo.DeviceNumber = Config._currentConfig.CurrentOutputDevice;
+            wo.DeviceNumber = Config.CurrentConfig.CurrentOutputDevice;
                 wo.PlaybackStopped += new EventHandler<StoppedEventArgs>(PlayBackStopped); //To cleanup resources when done
 
             string ext = fi.Substring(fi.LastIndexOf(".")).ToLower();
@@ -171,10 +171,10 @@ namespace SoundMachine
                 }
 
 
-                wo.Volume = Config._currentConfig.CurrentVolume / 10.0f;
+                wo.Volume = Config.CurrentConfig.CurrentVolume / 10.0f;
                 wo.Play();
 
-                if (Config._currentConfig.SoundPlaybackEnabled)
+                if (Config.CurrentConfig.SoundPlaybackEnabled)
                     PlaySoundToDefaultOutput(number, fi);
                 AddResourcesToPool(number, reader, wo, false);
             }
@@ -244,7 +244,7 @@ namespace SoundMachine
                 SoundProfile.CurrentSoundProfile.SaveSoundProfile();
 
                 //For UI
-                Form1._currentForm.UpdateTextbox(number, "Macro" + number);
+                MainForm._currentForm.UpdateTextbox(number, "Macro" + number);
             }
 
             return true;
@@ -267,12 +267,12 @@ namespace SoundMachine
             if (wo.Stoppable)
             {
                 TimeSpan ts = new TimeSpan(0, 0, 0);
-                float volume = Config._currentConfig.CurrentVolume / 10.0f;
+                float volume = Config.CurrentConfig.CurrentVolume / 10.0f;
                 for (int i = 0; i < stoppablePlayers.Length; i++)
                 {
                     if (stoppablePlayers[i] == wo)
                     {
-                        if (Config._currentConfig.InputMode == SoundMode.Loop)
+                        if (Config.CurrentConfig.InputMode == SoundMode.Loop)
                         {
                             stoppableReaders[i].CurrentTime = ts;
                             stoppablePlayers[i].Volume = volume;
@@ -326,22 +326,33 @@ namespace SoundMachine
             while (_killSignal == false)
             {
                 _stopListening = false;
-                continuousWi = new WaveInEvent();
-                continuousWi.WaveFormat = new WaveFormat(Config._currentConfig.InputSampleRate, Config._currentConfig.InputChannels);
-                continuousWi.DeviceNumber = Config._currentConfig.CurrentInputDevice;
-                
-                continuousWo = new DirectSoundOut(OutputGuids[Config._currentConfig.CurrentOutputDevice + 1], 40);
+                VolumeWaveProvider16 vSampleProvider;
+                try
+                {
+                    continuousWi = new WaveInEvent();
+                    continuousWi.WaveFormat = new WaveFormat(Config.CurrentConfig.InputSampleRate, Config.CurrentConfig.InputChannels);
+                    continuousWi.DeviceNumber = Config.CurrentConfig.CurrentInputDevice;
 
-                provider = new BufferedWaveProvider(continuousWi.WaveFormat);
-                VolumeWaveProvider16 vSampleProvider = new VolumeWaveProvider16(provider);
-                continuousWo.Init(vSampleProvider);
-                continuousWi.DataAvailable += new EventHandler<WaveInEventArgs>(waveInput_DataAvailable);
-                continuousWi.StartRecording();
+                    continuousWo = new DirectSoundOut(OutputGuids[Config.CurrentConfig.CurrentOutputDevice + 1], 40);
+
+                    provider = new BufferedWaveProvider(continuousWi.WaveFormat);
+                    vSampleProvider = new VolumeWaveProvider16(provider);
+                    continuousWo.Init(vSampleProvider);
+                    continuousWi.DataAvailable += new EventHandler<WaveInEventArgs>(waveInput_DataAvailable);
+                    continuousWi.StartRecording();
+                } catch(Exception e)
+                {
+                    Config.CurrentConfig.InputPassthroughEnabled = false;
+                    SettingsForm._currentForm.UnckeckInputCheckBox();
+                    _stopListening = true;
+                    MessageBox.Show(e.Message);
+                    break;
+                }
                 continuousWo.Play();
                 
                 while (_stopListening == false)
                 {
-                    vSampleProvider.Volume = Config._currentConfig.CurrentVolume / 10.0f;
+                    vSampleProvider.Volume = Config.CurrentConfig.CurrentVolume / 10.0f;
                     Thread.Sleep(25);
                 }
                 
@@ -360,28 +371,28 @@ namespace SoundMachine
          
         public static void SwitchSoundMode()
         {
-            if (Config._currentConfig.InputMode == SoundMode.StartStop)
-                Config._currentConfig.InputMode = SoundMode.Stack;
-            else if (Config._currentConfig.InputMode == SoundMode.Stack)
-                Config._currentConfig.InputMode = SoundMode.Interrupt;
-            else if(Config._currentConfig.InputMode == SoundMode.Interrupt)
-                Config._currentConfig.InputMode = SoundMode.Loop;
+            if (Config.CurrentConfig.InputMode == SoundMode.StartStop)
+                Config.CurrentConfig.InputMode = SoundMode.Stack;
+            else if (Config.CurrentConfig.InputMode == SoundMode.Stack)
+                Config.CurrentConfig.InputMode = SoundMode.Interrupt;
+            else if(Config.CurrentConfig.InputMode == SoundMode.Interrupt)
+                Config.CurrentConfig.InputMode = SoundMode.Loop;
             else
-                Config._currentConfig.InputMode = SoundMode.StartStop;
+                Config.CurrentConfig.InputMode = SoundMode.StartStop;
             Overlay._currentOverlay.UpdateBehaviorText();
         }
 
         public static void KillSound(int number)
         {
-            if (Config._currentConfig.InputMode == SoundMode.StartStop || Config._currentConfig.InputMode == SoundMode.Loop)
+            if (Config.CurrentConfig.InputMode == SoundMode.StartStop || Config.CurrentConfig.InputMode == SoundMode.Loop)
             {
                 if (stoppablePlayers[number] != null)
                 {
                     DisposeSound(number);
                 }
-                if (stoppablePlayers[number + Config._currentConfig.MaxSounds] != null)
+                if (stoppablePlayers[number + Config.CurrentConfig.MaxSounds] != null)
                 {
-                    DisposeSound(number + Config._currentConfig.MaxSounds);
+                    DisposeSound(number + Config.CurrentConfig.MaxSounds);
                 }
             }
             else
@@ -394,7 +405,7 @@ namespace SoundMachine
 
         public static void KillAllSounds()
         {
-            if (Config._currentConfig.InputMode == SoundMode.StartStop || Config._currentConfig.InputMode == SoundMode.Loop)
+            if (Config.CurrentConfig.InputMode == SoundMode.StartStop || Config.CurrentConfig.InputMode == SoundMode.Loop)
             {
                 for (int i = 0; i < stoppablePlayers.Length; i++)
                 {
@@ -419,7 +430,7 @@ namespace SoundMachine
 
         private static void DisposeSound(int number)
         {
-            if (Config._currentConfig.InputMode == SoundMode.StartStop || Config._currentConfig.InputMode == SoundMode.Loop)
+            if (Config.CurrentConfig.InputMode == SoundMode.StartStop || Config.CurrentConfig.InputMode == SoundMode.Loop)
             {
                 stoppablePlayers[number].Stop();
                 stoppablePlayers[number].Dispose();
@@ -427,7 +438,7 @@ namespace SoundMachine
                 stoppableReaders[number].Close();
                 stoppableReaders[number].Dispose();
                 stoppableReaders[number] = null;
-                if(number < Config._currentConfig.MaxSounds)
+                if(number < Config.CurrentConfig.MaxSounds)
                     stoppableState[number] = SoundState.Null;
             }
             else
