@@ -81,3 +81,4 @@ SoundMachine/SoundMachine/bin/Release/NAudio.Core.dll
 SoundMachine/SoundMachine/bin/Release/NAudio.Asio.dll
 SoundMachine/SoundMachine/bin/Release/Microsoft.Win32.Registry.xml
 SoundMachine/SoundMachine/bin/Release/Microsoft.Win32.Registry.dll
+SoundMachine/SoundMachine/obj/Release/.NETFramework,Version=v4.7.2.AssemblyAttributes.cs
