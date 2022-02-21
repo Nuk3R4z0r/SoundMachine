@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace SoundMachine
@@ -114,12 +113,6 @@ namespace SoundMachine
                 {
                     _inputPassthroughEnabled = value;
                     SaveConfig();
-
-                    if(value == true)
-                    {
-                        Thread t = new Thread(SoundSystem.ContinuousInputPlayback);
-                        t.Start();
-                    }
                 }
             }
         }
