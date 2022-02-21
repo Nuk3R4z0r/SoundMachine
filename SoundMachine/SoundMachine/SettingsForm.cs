@@ -70,10 +70,16 @@ namespace SoundMachine
 
         public void UnckeckInputCheckBox()
         {
-            Invoke((MethodInvoker)delegate
-            { 
-                inputCheckBox.Checked = false;
-            });
+            if (IsHandleCreated)
+            {
+                Invoke((MethodInvoker)delegate
+                {
+
+                    inputCheckBox.Checked = false;
+
+                });
+            }
+
         }
 
         private void muteInputCheckBox_CheckedChanged(object sender, EventArgs e)
