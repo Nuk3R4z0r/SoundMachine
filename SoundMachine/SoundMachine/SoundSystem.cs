@@ -329,7 +329,7 @@ namespace SoundMachine
                 {
 
                     _stopListening = false;
-                    VolumeWaveProvider16 vSampleProvider;
+                    //VolumeWaveProvider16 vSampleProvider;
 
                     continuousWi = new WaveInEvent();
                     continuousWi.WaveFormat = new WaveFormat(Config.CurrentConfig.InputSampleRate, Config.CurrentConfig.InputChannels);
@@ -338,8 +338,8 @@ namespace SoundMachine
                     continuousWo = new DirectSoundOut(OutputGuids[Config.CurrentConfig.CurrentOutputDevice + 1], 40);
 
                     provider = new BufferedWaveProvider(continuousWi.WaveFormat);
-                    vSampleProvider = new VolumeWaveProvider16(provider);
-                    continuousWo.Init(vSampleProvider);
+                    //vSampleProvider = new VolumeWaveProvider16(provider);
+                    continuousWo.Init(provider);
                     continuousWi.DataAvailable += new EventHandler<WaveInEventArgs>(waveInput_DataAvailable);
 
                     try
@@ -360,7 +360,7 @@ namespace SoundMachine
 
                     while (_stopListening == false && Config.CurrentConfig.InputPassthroughEnabled)
                     {
-                        vSampleProvider.Volume = Config.CurrentConfig.CurrentVolume / 10.0f;
+                        //vSampleProvider.Volume = Config.CurrentConfig.CurrentVolume / 10.0f;
                         Thread.Sleep(25);
                     }
 
