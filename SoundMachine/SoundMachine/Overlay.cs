@@ -46,7 +46,7 @@ namespace SoundMachine
 
         public void UpdateBehaviorText()
         {
-            lblBehavior.Text = Config._currentConfig.InputMode.ToString();
+            lblBehavior.Text = Config.CurrentConfig.InputMode.ToString();
         }
 
         public void UpdateStatusColor()

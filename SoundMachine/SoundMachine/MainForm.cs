@@ -39,13 +39,9 @@ namespace SoundMachine
 
             RenderCanvas();
             SoundSystem.PopulateOutputDevices();
-            SettingsForm settingsForm = new SettingsForm();
 
-            if (Config.CurrentConfig.InputPassthroughEnabled)
-            {
-                Thread t = new Thread(SoundSystem.ContinuousInputPlayback);
-                t.Start();
-            }
+            Thread t = new Thread(SoundSystem.ContinuousInputPlayback);
+            t.Start();
 
             SoundSystem.InitializeStoppables();
         }
@@ -233,13 +229,13 @@ namespace SoundMachine
 
                     if (File.Exists(newName))
                     {
-                        if (!File.Equals(SoundProfile.CurrentSoundProfile.Sounds[macroNumber], newName))
-                            File.Delete(newName);
+                        if (!File.Equals(SoundProfile.SoundDirectory + SoundProfile.CurrentSoundProfile.Sounds[macroNumber], SoundProfile.SoundDirectory + newName))
+                            File.Delete(SoundProfile.SoundDirectory + newName);
                     }
 
                     SoundSystem.KillSound(macroNumber);
                     if (!File.Equals(SoundProfile.CurrentSoundProfile.Sounds[macroNumber], newName))
-                        File.Move(SoundProfile.CurrentSoundProfile.Sounds[macroNumber], newName); //refactor please, no need to move files that were just recorded
+                        File.Move(SoundProfile.SoundDirectory + SoundProfile.CurrentSoundProfile.Sounds[macroNumber], SoundProfile.SoundDirectory + newName); //refactor please, no need to move files that were just recorded
 
                     SoundProfile.CurrentSoundProfile.Sounds[macroNumber] = newName;
                     SoundProfile.CurrentSoundProfile.SaveSoundProfile();
@@ -321,7 +317,7 @@ namespace SoundMachine
 
             if (Config.CurrentConfig.Profiles.Count == 0)
             {
-                Config.CurrentConfig.Profiles.Add("Profile0");
+                Config.CurrentConfig.Profiles.Add("Profile 1");
             }
 
             if (Config.CurrentConfig.CurrentProfile > 0)

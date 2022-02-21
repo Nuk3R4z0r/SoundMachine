@@ -30,10 +30,10 @@ namespace SoundMachine
             Regex rgx = new Regex("[^a-zA-Z0-9 -]");
             textBox1.Text = rgx.Replace(textBox1.Text, "");
 
-            if (!Config._currentConfig.Profiles.Contains(textBox1.Text) )
+            if (!Config.CurrentConfig.Profiles.Contains(textBox1.Text) )
             {
                 if(!IsRenaming)
-                    Config._currentConfig.Profiles.Add(textBox1.Text);
+                    Config.CurrentConfig.Profiles.Add(textBox1.Text);
                 NewProfile = textBox1.Text;
                 Close();
             }

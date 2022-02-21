@@ -38,7 +38,7 @@ namespace SoundMachine
             string fullFileName = fd.Substring(fd.LastIndexOf("\\") + 1);
             string fileName = fullFileName.Substring(0, fullFileName.LastIndexOf("."));
 
-            if (!Config._currentConfig.Profiles.Contains(fileName) || fd != Config.WorkingDir + fileName + "\\" + fullFileName)
+            if (!Config.CurrentConfig.Profiles.Contains(fileName) || fd != Config.WorkingDir + fileName + "\\" + fullFileName)
             {
                 Directory.CreateDirectory(Config.WorkingDir + fileName);
                 if (!File.Exists(Config.WorkingDir + fileName + "\\" + fullFileName))
@@ -54,8 +54,8 @@ namespace SoundMachine
                         File.Copy(oldPath, newPath, true);
                 }
 
-                Config._currentConfig.Profiles.Add(fileName);
-                Config._currentConfig.CurrentProfile = Config._currentConfig.Profiles.Count - 1;
+                Config.CurrentConfig.Profiles.Add(fileName);
+                Config.CurrentConfig.CurrentProfile = Config.CurrentConfig.Profiles.Count - 1;
 
                 return true;
             }
@@ -65,8 +65,11 @@ namespace SoundMachine
 
         public static void MoveHome(string newHome)
         {
-            if(!newHome.Contains("SoundMachine\\"))
+            newHome = newHome + "\\";
+
+            if (!newHome.Contains("SoundMachine"))
                 newHome = newHome + "SoundMachine\\";
+            
             SoundSystem.KillAllSounds();
             Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(Config.WorkingDir, newHome, true);
             Config.WorkingDir = newHome;

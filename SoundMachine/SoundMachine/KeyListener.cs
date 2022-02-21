@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 
 namespace SoundMachine
 {
@@ -54,7 +52,7 @@ namespace SoundMachine
         {
             int vkCode = Marshal.ReadInt32(lParam);
 
-            if (!_listenerEnabled && !changeBinding && vkCode != Config._currentConfig.ToggleSystemBinding)
+            if (!_listenerEnabled && !changeBinding && vkCode != Config.CurrentConfig.ToggleSystemBinding)
             {
                 return CallNextHookEx(_hookID, nCode, wParam, lParam);
             }
@@ -64,15 +62,15 @@ namespace SoundMachine
                 if (changeBinding)
                 {
                     if (SetBindingForm._currentForm.BindingType == KeyBinding.ToggleOverlay)
-                        Config._currentConfig.ToggleOverlayBinding = vkCode;
+                        Config.CurrentConfig.ToggleOverlayBinding = vkCode;
                     else if (SetBindingForm._currentForm.BindingType == KeyBinding.ToggleProfile)
-                        Config._currentConfig.ToggleProfileBinding = vkCode;
+                        Config.CurrentConfig.ToggleProfileBinding = vkCode;
                     else if (SetBindingForm._currentForm.BindingType == KeyBinding.ToggleSystem)
-                        Config._currentConfig.ToggleSystemBinding = vkCode;
+                        Config.CurrentConfig.ToggleSystemBinding = vkCode;
                     else if (SetBindingForm._currentForm.BindingType == KeyBinding.ToggleMode)
-                        Config._currentConfig.ToggleModeBinding = vkCode;
+                        Config.CurrentConfig.ToggleModeBinding = vkCode;
                     else if (SetBindingForm._currentForm.BindingType == KeyBinding.Record)
-                        Config._currentConfig.RecordBinding = vkCode;
+                        Config.CurrentConfig.RecordBinding = vkCode;
                     else
                     {
                         for (int i = 0; i < SoundProfile.CurrentSoundProfile.Bindings.Length; i++)
@@ -94,7 +92,7 @@ namespace SoundMachine
                 }
                 else
                 {
-                    if (vkCode == Config._currentConfig.ToggleOverlayBinding)
+                    if (vkCode == Config.CurrentConfig.ToggleOverlayBinding)
                     {
                         if (Overlay._currentOverlay.Visible)
                             Overlay._currentOverlay.Hide();
@@ -102,18 +100,18 @@ namespace SoundMachine
                             Overlay._currentOverlay.Show();
                         return (System.IntPtr)1;
                     }
-                    else if (vkCode == Config._currentConfig.ToggleProfileBinding)
+                    else if (vkCode == Config.CurrentConfig.ToggleProfileBinding)
                     {
                         SoundProfile.Next();
                         return (System.IntPtr)1;
                     }
-                    else if (vkCode == Config._currentConfig.ToggleSystemBinding)
+                    else if (vkCode == Config.CurrentConfig.ToggleSystemBinding)
                     {
                         MainForm._currentForm.ToggleSystemEnabled(null);
                         Overlay._currentOverlay.UpdateStatusColor();
                         return (System.IntPtr)1;
                     }
-                    else if (vkCode == Config._currentConfig.ToggleModeBinding)
+                    else if (vkCode == Config.CurrentConfig.ToggleModeBinding)
                     {
                         SoundSystem.KillAllSounds();
                         SoundSystem.SwitchSoundMode();
@@ -121,25 +119,25 @@ namespace SoundMachine
                             SettingsForm._currentForm.SetKeyPressBoxSelectedIndex();
                         return (System.IntPtr)1;
                     }
-                    else if (vkCode == Config._currentConfig.RecordBinding) //Control button on keyboard
+                    else if (vkCode == Config.CurrentConfig.RecordBinding) //Control button on keyboard
                         isRecording = true; //Enables recording
                     else if (!isRecording)
                     {
                         if (SoundSystem.PlaySound(Utilities.ConvertKeyCodeToButtonId(vkCode)))
-                            if (Config._currentConfig.InterruptKeys)
+                            if (Config.CurrentConfig.InterruptKeys)
                                 return (System.IntPtr)1;
                     }
                     else
                     {
                         if (SoundSystem.RecordSound(Utilities.ConvertKeyCodeToButtonId(vkCode)))
-                            if (Config._currentConfig.InterruptKeys)
+                            if (Config.CurrentConfig.InterruptKeys)
                                 return (System.IntPtr)1;
                     }
                 }
             }
             else if (nCode >= 0 && wParam == (IntPtr)WM_KEYUP)
             {
-                if (vkCode == Config._currentConfig.RecordBinding) //Control button on keyboard
+                if (vkCode == Config.CurrentConfig.RecordBinding) //Control button on keyboard
                 {
                     isRecording = false;
                     SoundSystem.StopRecording(); //if ctrl is released stop all recording

@@ -137,10 +137,10 @@ namespace SoundMachine
         
         private static void StackSound(int number)
         {
-            string fi = SoundProfile.SoundDirectory + SoundProfile.CurrentSoundProfile.Sounds[number]; //gets location+filename of sound from config determined by numpad number
-            if (fi == null)
+            if (SoundProfile.CurrentSoundProfile.Sounds[number] == null)
                 return;
 
+            string fi = SoundProfile.SoundDirectory + SoundProfile.CurrentSoundProfile.Sounds[number]; //gets location+filename of sound from config determined by numpad number
             WaveOutModEvent wo = new WaveOutModEvent();
             wo.DeviceNumber = Config.CurrentConfig.CurrentOutputDevice;
                 wo.PlaybackStopped += new EventHandler<StoppedEventArgs>(PlayBackStopped); //To cleanup resources when done
@@ -239,7 +239,7 @@ namespace SoundMachine
                 _waveSource.StartRecording();
 
                 //Saves to config
-                SoundProfile.CurrentSoundProfile.Sounds[number] = saveFile;
+                SoundProfile.CurrentSoundProfile.Sounds[number] = "Macro" + number + ".wav";
                 SoundProfile.CurrentSoundProfile.Texts[number] = "Macro" + number;
                 SoundProfile.CurrentSoundProfile.SaveSoundProfile();
 
@@ -325,10 +325,12 @@ namespace SoundMachine
             _killSignal = false;
             while (_killSignal == false)
             {
-                _stopListening = false;
-                VolumeWaveProvider16 vSampleProvider;
-                try
+                if (Config.CurrentConfig.InputPassthroughEnabled)
                 {
+
+                    _stopListening = false;
+                    VolumeWaveProvider16 vSampleProvider;
+
                     continuousWi = new WaveInEvent();
                     continuousWi.WaveFormat = new WaveFormat(Config.CurrentConfig.InputSampleRate, Config.CurrentConfig.InputChannels);
                     continuousWi.DeviceNumber = Config.CurrentConfig.CurrentInputDevice;
@@ -339,26 +341,35 @@ namespace SoundMachine
                     vSampleProvider = new VolumeWaveProvider16(provider);
                     continuousWo.Init(vSampleProvider);
                     continuousWi.DataAvailable += new EventHandler<WaveInEventArgs>(waveInput_DataAvailable);
-                    continuousWi.StartRecording();
-                } catch(Exception e)
-                {
-                    Config.CurrentConfig.InputPassthroughEnabled = false;
-                    SettingsForm._currentForm.UnckeckInputCheckBox();
-                    _stopListening = true;
-                    MessageBox.Show(e.Message);
-                    break;
+
+                    try
+                    {
+                        continuousWi.StartRecording();
+                    }
+                    catch (Exception e)
+                    {
+                        Config.CurrentConfig.InputPassthroughEnabled = false;
+                        _stopListening = true;
+                        SettingsForm._currentForm?.UnckeckInputCheckBox();
+                        if (e.Message.Contains("AlreadyAllocated"))
+                            MessageBox.Show("Current input device is already in use.\nDisabling input passthrough");
+                        else
+                            MessageBox.Show(e.Message);
+                    }
+                    continuousWo.Play();
+
+                    while (_stopListening == false && Config.CurrentConfig.InputPassthroughEnabled)
+                    {
+                        vSampleProvider.Volume = Config.CurrentConfig.CurrentVolume / 10.0f;
+                        Thread.Sleep(25);
+                    }
+
+                    continuousWi.StopRecording();
+                    provider.ClearBuffer();
+                    continuousWo.Stop();
+
                 }
-                continuousWo.Play();
-                
-                while (_stopListening == false)
-                {
-                    vSampleProvider.Volume = Config.CurrentConfig.CurrentVolume / 10.0f;
-                    Thread.Sleep(25);
-                }
-                
-                continuousWi.StopRecording();
-                provider.ClearBuffer();
-                continuousWo.Stop();
+                Thread.Sleep(500);
             }
         }
 
