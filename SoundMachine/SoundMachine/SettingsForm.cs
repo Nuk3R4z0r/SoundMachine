@@ -28,8 +28,6 @@ namespace SoundMachine
             keyPressBox.SelectedItem = Config.CurrentConfig.InputMode.ToString();
             
             LoadDevices();
-            if (!Config.CurrentConfig.InputPassthroughEnabled)
-                DeviceInBox.Enabled = false;
 
             System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
             FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
@@ -85,10 +83,6 @@ namespace SoundMachine
         private void muteInputCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             Config.CurrentConfig.MuteInputWithSoundSystem = muteInputCheckBox.Checked;
-            if (KeyListener._listenerEnabled == false)
-                SoundSystem.InputDisabled = true;
-            else
-                SoundSystem.InputDisabled = false;
         }
 
         private void inputChannelsBox_SelectedIndexChanged(object sender, EventArgs e)
