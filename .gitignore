@@ -69,3 +69,15 @@ SoundMachine/.vs/SoundMachine/v16/.suo
 SoundMachine/SoundMachine/bin/Release/SoundMachine.zip
 *.resources
 SoundMachine/SoundMachine/bin/Release/SoundMachine.zip
+SoundMachine/SoundMachine/bin/Release/System.Security.Principal.Windows.xml
+SoundMachine/SoundMachine/bin/Release/System.Security.Principal.Windows.dll
+SoundMachine/SoundMachine/bin/Release/System.Security.AccessControl.xml
+SoundMachine/SoundMachine/bin/Release/System.Security.AccessControl.dll
+SoundMachine/SoundMachine/bin/Release/NAudio.WinMM.dll
+SoundMachine/SoundMachine/bin/Release/NAudio.WinForms.dll
+SoundMachine/SoundMachine/bin/Release/NAudio.Wasapi.dll
+SoundMachine/SoundMachine/bin/Release/NAudio.Midi.dll
+SoundMachine/SoundMachine/bin/Release/NAudio.Core.dll
+SoundMachine/SoundMachine/bin/Release/NAudio.Asio.dll
+SoundMachine/SoundMachine/bin/Release/Microsoft.Win32.Registry.xml
+SoundMachine/SoundMachine/bin/Release/Microsoft.Win32.Registry.dll
